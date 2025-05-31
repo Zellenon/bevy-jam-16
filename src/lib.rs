@@ -14,10 +14,6 @@ mod theme;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
-fn main() -> AppExit {
-    App::new().add_plugins(AppPlugin).run()
-}
-
 pub struct AppPlugin;
 
 impl Plugin for AppPlugin {
@@ -34,7 +30,7 @@ impl Plugin for AppPlugin {
                 })
                 .set(WindowPlugin {
                     primary_window: Window {
-                        title: "{{project-name | title_case}}".to_string(),
+                        title: "Chain Reaction Towers".to_string(),
                         fit_canvas_to_parent: true,
                         ..default()
                     }
@@ -88,7 +84,7 @@ enum AppSystems {
     Update,
 }
 
-/// Whether or not the game is paused.
+/// Whether the game is paused.
 #[derive(States, Copy, Clone, Eq, PartialEq, Hash, Debug, Default)]
 #[states(scoped_entities)]
 struct Pause(pub bool);
