@@ -8,11 +8,8 @@ use bevy::prelude::*;
 use rand::prelude::*;
 use std::time::Duration;
 
-use crate::{
-    AppSystems, PausableSystems,
-    audio::sound_effect,
-    demo::{movement::MovementController, player::PlayerAssets},
-};
+use crate::assets::GameAssets;
+use crate::{AppSystems, PausableSystems, audio::sound_effect, demo::movement::MovementController};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -27,7 +24,7 @@ pub(super) fn plugin(app: &mut App) {
                 trigger_step_sound_effect,
             )
                 .chain()
-                .run_if(resource_exists::<PlayerAssets>)
+                .run_if(resource_exists::<GameAssets>)
                 .in_set(AppSystems::Update),
         )
             .in_set(PausableSystems),
@@ -76,7 +73,7 @@ fn update_animation_atlas(mut query: Query<(&PlayerAnimation, &mut Sprite)>) {
 /// animation.
 fn trigger_step_sound_effect(
     mut commands: Commands,
-    player_assets: Res<PlayerAssets>,
+    player_assets: Res<GameAssets>,
     mut step_query: Query<&PlayerAnimation>,
 ) {
     for animation in &mut step_query {

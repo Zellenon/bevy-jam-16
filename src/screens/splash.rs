@@ -1,12 +1,7 @@
 //! A splash screen that plays briefly at startup.
 
-use bevy::{
-    image::{ImageLoaderSettings, ImageSampler},
-    input::common_conditions::input_just_pressed,
-    prelude::*,
-};
-
-use crate::{AppSystems, screens::Screen, theme::prelude::*};
+use crate::{screens::Screen, theme::prelude::*, AppSystems};
+use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
     // Spawn splash screen.
@@ -57,19 +52,9 @@ fn spawn_splash_screen(mut commands: Commands, asset_server: Res<AssetServer>) {
             Name::new("Splash image"),
             Node {
                 margin: UiRect::all(Val::Auto),
-                width: Val::Percent(70.0),
                 ..default()
             },
-            ImageNode::new(asset_server.load_with_settings(
-                // This should be an embedded asset for instant loading, but that is
-                // currently [broken on Windows Wasm builds](https://github.com/bevyengine/bevy/issues/14246).
-                "images/splash.png",
-                |settings: &mut ImageLoaderSettings| {
-                    // Make an exception for the splash image in case
-                    // `ImagePlugin::default_nearest()` is used for pixel art.
-                    settings.sampler = ImageSampler::linear();
-                },
-            )),
+            ImageNode::new(asset_server.load("images/splash.png")),
             ImageNodeFadeInOut {
                 total_duration: SPLASH_DURATION_SECS,
                 fade_duration: SPLASH_FADE_DURATION_SECS,

@@ -3,7 +3,7 @@
 // Disable console on Windows for non-dev builds.
 #![cfg_attr(not(feature = "dev"), windows_subsystem = "windows")]
 
-mod asset_tracking;
+mod assets;
 mod audio;
 mod demo;
 #[cfg(feature = "dev")]
@@ -13,6 +13,12 @@ mod screens;
 mod theme;
 
 use bevy::{asset::AssetMetaCheck, prelude::*};
+
+pub mod prelude {
+    pub use crate::assets::{GameAssets, UiAssets};
+    pub use crate::screens::Screen;
+    pub use crate::{AppSystems, PausableSystems};
+}
 
 pub struct AppPlugin;
 
@@ -41,7 +47,7 @@ impl Plugin for AppPlugin {
 
         // Add other plugins.
         app.add_plugins((
-            asset_tracking::plugin,
+            assets::plugin,
             audio::plugin,
             demo::plugin,
             #[cfg(feature = "dev")]
@@ -75,7 +81,7 @@ impl Plugin for AppPlugin {
 /// When adding a new variant, make sure to order it in the `configure_sets`
 /// call above.
 #[derive(SystemSet, Debug, Clone, Copy, Eq, PartialEq, Hash, PartialOrd, Ord)]
-enum AppSystems {
+pub enum AppSystems {
     /// Tick timers.
     TickTimers,
     /// Record player input.
@@ -91,7 +97,7 @@ struct Pause(pub bool);
 
 /// A system set for systems that shouldn't run while the game is paused.
 #[derive(SystemSet, Copy, Clone, Eq, PartialEq, Hash, Debug)]
-struct PausableSystems;
+pub struct PausableSystems;
 
 fn spawn_camera(mut commands: Commands) {
     commands.spawn((Name::new("Camera"), Camera2d));
