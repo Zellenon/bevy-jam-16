@@ -13,8 +13,8 @@ struct HotbarItem();
 fn spawn_turret_bar(mut commands: Commands, assets: Res<UiAssets>) {
     let hotbar_items = vec![
         ("tesla turret", assets.hotbar_tesla_image.clone()),
-        ("water bucket", assets.hotbar_tesla_image.clone()),
-        ("crusher", assets.hotbar_tesla_image.clone()),
+        ("water bucket", assets.hotbar_water_image.clone()),
+        ("trap door", assets.hotbar_trapdoor_image.clone()),
     ];
 
     commands.spawn((
