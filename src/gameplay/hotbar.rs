@@ -1,11 +1,14 @@
 use crate::prelude::*;
 use bevy::ecs::spawn::*;
 use bevy::prelude::*;
-use bevy_asset_loader::asset_collection::AssetCollection;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Gameplay), spawn_turret_bar);
+    app.add_systems(Update, highlight_hovered_tile);
 }
+
+#[derive(Component, Debug, Reflect)]
+struct HotbarItem();
 
 fn spawn_turret_bar(mut commands: Commands, assets: Res<UiAssets>) {
     let hotbar_items = vec![
@@ -50,14 +53,33 @@ fn spawn_hotbar_item(name: impl Into<String>, icon: Handle<Image>) -> impl Bundl
     let owned_name = name.into().clone();
     (
         Name::new(owned_name.clone()),
+        Button,
         Node {
             width: Val::Px(64.),
             height: Val::Px(64.),
             ..default()
         },
-        BackgroundColor(Color::WHITE.with_alpha(0.5)),
+        BackgroundColor(Color::WHITE.with_alpha(0.25)),
         BorderColor(Color::WHITE),
         BorderRadius::all(Val::Px(8.0)),
-        children![ImageNode::new(icon)],
+        HotbarItem(),
+        children![(
+            Node {
+                padding: UiRect::all(Val::Px(4.0)),
+                ..default()
+            },
+            ImageNode::new(icon)
+        )],
     )
+}
+
+fn highlight_hovered_tile(
+    mut tile_query: Query<(&Interaction, &mut BackgroundColor), With<HotbarItem>>,
+) {
+    for (interaction, mut background_color) in &mut tile_query {
+        background_color.0 = match interaction {
+            Interaction::None => Color::WHITE.with_alpha(0.25),
+            _ => Color::WHITE,
+        }
+    }
 }
