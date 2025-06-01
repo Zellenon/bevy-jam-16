@@ -1,6 +1,6 @@
 //! A splash screen that plays briefly at startup.
 
-use crate::{screens::Screen, theme::prelude::*, AppSystems};
+use crate::{AppSystems, screens::Screen, theme::prelude::*};
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
 
 pub(super) fn plugin(app: &mut App) {
@@ -36,6 +36,11 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         enter_title_screen
             .run_if(input_just_pressed(KeyCode::Escape).and(in_state(Screen::Splash))),
+    );
+    app.add_systems(
+        Update,
+        enter_title_screen
+            .run_if(input_just_pressed(MouseButton::Left).and(in_state(Screen::Splash))),
     );
 }
 
