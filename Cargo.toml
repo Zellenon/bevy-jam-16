@@ -5,8 +5,8 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-bevy = { version = "0.16", features = ["wayland"] }
-rand = "0.8"
+bevy = { version = "0.16.1", features = ["wayland"] }
+rand = "0.9.1"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
     "max_level_debug",
