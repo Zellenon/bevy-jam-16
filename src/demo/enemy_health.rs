@@ -1,5 +1,8 @@
 use crate::{AppSystems, PausableSystems};
+use avian2d::prelude::OnCollisionStart;
 use bevy::{color::palettes::basic::*, prelude::*};
+
+use super::enemy_movement::EnemyController;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -8,6 +11,8 @@ pub(super) fn plugin(app: &mut App) {
             .in_set(AppSystems::Update)
             .in_set(PausableSystems),
     );
+
+    app.add_observer(hit_player);
 }
 
 // #[derive(Component, Default)]
@@ -63,5 +68,23 @@ fn update_health_bar(time: Res<Time>, mut query: Query<(&mut EnemyHealthBar, &mu
         transform.scale.x = health_bar.health;
         transform.translation.x =
             -(health_bar.mesh_shape.size().x * (1.0 - health_bar.health)) / 2.0;
+    }
+}
+
+fn hit_player(
+    trigger: Trigger<OnCollisionStart>,
+    enemies: Query<Entity, With<EnemyController>>,
+    mut commands: Commands,
+) {
+    let Some(body) = trigger.event().body else {
+        return;
+    };
+    let collider = trigger.event().collider;
+
+    for entity in enemies {
+        info!(?entity);
+        if body == entity || collider == entity {
+            info!(target=?trigger.target(),event=?trigger.event(), "Player touched the enemy" )
+        }
     }
 }

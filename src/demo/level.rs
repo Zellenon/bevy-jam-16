@@ -33,7 +33,6 @@ pub fn spawn_level(
         StateScoped(Screen::Gameplay),
         children![
             (
-                Name::new("Enemy"),
                 enemy_spawn_bundle(1650.0, &assets, &mut texture_atlas_layouts,),
                 children![health_bar_spawn(meshes, materials)],
             ),

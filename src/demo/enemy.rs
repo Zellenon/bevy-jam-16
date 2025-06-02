@@ -21,14 +21,23 @@ pub(super) fn plugin(app: &mut App) {
         kinematic_controller_collisions.in_set(NarrowPhaseSet::Last),
     );
 
-    app.add_observer(|trigger: Trigger<OnCollisionStart, Enemy>|{
-        info!(target=?trigger.target(),event=?trigger.event(), "on_add (global)" )
-    });
+    // app.add_observer(
+    //     |trigger: Trigger<OnCollisionStart>,
+    //      enemies: Query<Entity, With<Enemy>>,
+    //      mut commands: Commands| {
+    //         let Some(enemy_id) = trigger.body else {return};
+    //         for entity in enemies {
+    //             if enemy_id == entity {
+    //                 info!(target=?trigger.target(),event=?trigger.event(), "Player touched the enemy" )
+    //             }
+    //         }
+    //     },
+    // );
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 #[reflect(Component)]
-struct Enemy;
+pub struct Enemy;
 
 /// The enemy spawn.
 pub fn enemy_spawn_bundle(
@@ -56,7 +65,7 @@ pub fn enemy_spawn_bundle(
             .with_movement(max_speed, 0.96),
         Transform::from_scale(Vec2::splat(4.0).extend(1.0))
             .with_translation(Vec3::new(-540.0, -260.0, 1.)),
-        CollisionEventsEnabled,
+        // CollisionEventsEnabled,
     )
 }
 
