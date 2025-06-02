@@ -1,6 +1,10 @@
 use crate::{AppSystems, PausableSystems};
 use avian2d::prelude::OnCollisionStart;
-use bevy::{color::palettes::basic::*, prelude::*};
+use bevy::{
+    color::palettes::basic::*,
+    ecs::{component::HookContext, world::DeferredWorld},
+    prelude::*,
+};
 
 use super::enemy_movement::EnemyController;
 
@@ -30,6 +34,10 @@ pub struct EnemyHealthBar {
 pub struct EnemyHealthBarBundle {
     pub enemy_health_bar: EnemyHealthBar,
 }
+
+#[derive(Component)]
+#[component(on_add = calculate_damage)]
+pub struct Damage(f32);
 
 impl EnemyHealthBarBundle {
     pub fn new(width: f32, height: f32) -> Self {
@@ -86,5 +94,11 @@ fn hit_player(
         if body == entity || collider == entity {
             info!(target=?trigger.target(),event=?trigger.event(), "Player touched the enemy" )
         }
+        commands.entity(entity).insert(Damage(0.25));
+        commands.entity(entity).remove::<Damage>();
     }
+}
+
+fn calculate_damage(mut _world: DeferredWorld, HookContext { entity, .. }: HookContext) {
+    info!(?entity, "on_add")
 }
