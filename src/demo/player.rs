@@ -5,7 +5,7 @@ use crate::demo::{
     movement::{MovementController, ScreenWrap},
 };
 use crate::prelude::*;
-use avian2d::prelude::{Collider, RigidBody};
+use avian2d::prelude::{Collider, CollisionEventsEnabled, RigidBody};
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -52,12 +52,13 @@ pub fn player(
         },
         ScreenWrap,
         player_animation,
+        CollisionEventsEnabled,
     )
 }
 
 #[derive(Component, Debug, Clone, Copy, PartialEq, Eq, Default, Reflect)]
 #[reflect(Component)]
-struct Player;
+pub struct Player;
 
 fn record_player_directional_input(
     input: Res<ButtonInput<KeyCode>>,
