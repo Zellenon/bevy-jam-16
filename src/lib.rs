@@ -5,6 +5,7 @@
 
 mod assets;
 mod audio;
+mod data;
 mod demo;
 #[cfg(feature = "dev")]
 mod dev_tools;
@@ -13,7 +14,6 @@ mod menus;
 mod screens;
 mod theme;
 
-use avian2d::prelude::{NarrowPhaseSet, PhysicsSchedule};
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 pub mod prelude {
@@ -53,6 +53,7 @@ impl Plugin for AppPlugin {
 
         // Add other plugins.
         app.add_plugins((
+            data::plugin,
             assets::plugin,
             audio::plugin,
             demo::plugin,
