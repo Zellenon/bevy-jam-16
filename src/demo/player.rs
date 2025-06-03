@@ -1,11 +1,12 @@
 //! Player-specific behavior.
 
+use crate::data::Tower;
 use crate::demo::{
     animation::PlayerAnimation,
     movement::{MovementController, ScreenWrap},
 };
 use crate::prelude::*;
-use avian2d::prelude::{Collider, LockedAxes, RigidBody};
+use avian2d::prelude::{Collider, CollisionEventsEnabled, LockedAxes, RigidBody};
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
@@ -53,6 +54,8 @@ pub fn player(
         },
         ScreenWrap,
         player_animation,
+        CollisionEventsEnabled, // Pretends player is a tower attack collider
+        Tower::Acid,            // Pretends player is an acid tower
     )
 }
 

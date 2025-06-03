@@ -1,12 +1,14 @@
-use avian2d::prelude::OnCollisionStart;
+use avian2d::prelude::{CollisionEventsEnabled, OnCollisionStart};
 use bevy::prelude::*;
+use rand::Rng;
 
 use super::enemy_movement::EnemyController;
 use crate::assets::game_assets::HEALTH_BAR_WIDTH;
+use crate::data::Tower;
 
 pub(super) fn plugin(app: &mut App) {
-    app.add_observer(hit_player);
-    app.add_observer(update_health_bar);
+    app.add_observer(hit_enemy);
+    app.add_observer(update_health);
 }
 
 #[derive(Component, Default, Clone, Copy, PartialEq, Reflect)]
@@ -17,7 +19,8 @@ pub struct EnemyHealthBar;
 
 #[derive(Event, Debug)]
 pub struct Attack {
-    pub damage: f32,
+    tower_entity: Entity,
+    enemy_health_bar_entity: Entity,
 }
 
 impl EnemyHealth {
@@ -26,35 +29,66 @@ impl EnemyHealth {
     }
 }
 
-pub fn update_health_bar(
+pub fn update_health(
     trigger: Trigger<Attack>,
     mut bars: Query<(Entity, &ChildOf, &mut Transform), With<EnemyHealthBar>>,
+    towers: Query<&Tower>,
     mut enemies: Query<&mut EnemyHealth>,
 ) {
     let Ok(mut parent_health) = enemies.get_mut(trigger.target()) else {
-        warn!(target=?trigger.target(), "Target not found");
+        warn!(target=?trigger.target(), "Enemy target not found");
         return;
     };
 
-    for (_, child_of, mut transform) in bars.iter_mut() {
-        if child_of.0 == trigger.target() {
-            parent_health.0 -= trigger.damage.clamp(0.0, 1.0);
-            transform.scale.x = parent_health.0;
-            transform.translation.x = -(HEALTH_BAR_WIDTH * (1.0 - parent_health.0)) / 2.0;
-        }
-    }
+    let Ok(tower) = towers.get(trigger.tower_entity) else {
+        warn!(target=?trigger.target(), "Tower not found");
+        return;
+    };
+
+    let Ok((_, _, mut transform)) = bars.get_mut(trigger.enemy_health_bar_entity) else {
+        return;
+    };
+
+    let tower_damage = tower.deal_damage();
+    let rng = &mut rand::rng();
+    let damage = rng.random_range(tower_damage.min_damage..=tower_damage.max_damage);
+
+    parent_health.0 -= damage;
+    parent_health.0 = parent_health.0.clamp(0.0, 1.0);
+    transform.scale.x = parent_health.0;
+    transform.translation.x = -(HEALTH_BAR_WIDTH * (1.0 - parent_health.0)) / 2.0;
 }
 
-fn hit_player(
+fn hit_enemy(
     trigger: Trigger<OnCollisionStart>,
-    enemies: Query<Entity, With<EnemyHealth>>,
+    world: bevy::ecs::world::DeferredWorld,
     mut commands: Commands,
 ) {
-    let target = trigger.event().collider;
-    let Ok(_) = enemies.get(target) else {
+    let enemy_target = trigger.event().collider;
+
+    // The health_bar is 2 children deep. Use first child to get the next child
+    // This logic is fragile and will break if the prefab changes in the future.
+    let Some(children) = world.get::<Children>(enemy_target) else {
         return;
     };
 
-    let damage = 0.25;
-    commands.trigger_targets(Attack { damage: damage }, target);
+    let Some(child_entity) = children.first().cloned() else {
+        return;
+    };
+
+    let Some(children) = world.get::<Children>(child_entity) else {
+        return;
+    };
+
+    let Some(health_bar_entity) = children.first().cloned() else {
+        return;
+    };
+
+    commands.trigger_targets(
+        Attack {
+            tower_entity: trigger.target(),
+            enemy_health_bar_entity: health_bar_entity,
+        },
+        enemy_target,
+    );
 }

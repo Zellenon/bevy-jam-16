@@ -81,4 +81,19 @@ impl Tower {
             }
         };
     }
+
+    pub fn deal_damage(&self) -> TowerDamage {
+        match self {
+            _ => TowerDamage {
+                min_damage: 0.1,
+                max_damage: 0.25,
+            },
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct TowerDamage {
+    pub min_damage: f32,
+    pub max_damage: f32,
 }
