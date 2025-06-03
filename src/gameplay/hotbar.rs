@@ -145,7 +145,7 @@ fn spawn_hotbar_item(tower: Tower, icon: Handle<Image>) -> impl Bundle {
                     max_width: Val::Px(256.0),
                     ..default()
                 },
-                children![Text(tower.name().into()),]
+                Children::spawn((Spawn(Text(tower.name().into())),)),
             ),
             (
                 Node {
