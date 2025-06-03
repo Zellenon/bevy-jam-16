@@ -46,4 +46,7 @@ pub fn spawn_level(
             + name("Level Parent")
             + StateScoped(Screen::Gameplay).store(),
     );
+    commands.compose(basic_trooper() + pos(0., 0.));
+    commands.compose(chonkus_trooper() + pos(0., 0.));
+    commands.compose(turbo_trooper() + pos(0., 0.));
 }
