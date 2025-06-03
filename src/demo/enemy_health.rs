@@ -49,9 +49,9 @@ pub fn update_health(
         return;
     };
 
-    let tower_damage = tower.deal_damage();
+    let tower_damage = tower.collision_damage();
     let rng = &mut rand::rng();
-    let damage = rng.random_range(tower_damage.min_damage..=tower_damage.max_damage);
+    let damage = rng.random_range(tower_damage.min..=tower_damage.max);
 
     parent_health.0 -= damage;
     parent_health.0 = parent_health.0.clamp(0.0, 1.0);

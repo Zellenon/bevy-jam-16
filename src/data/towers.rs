@@ -82,18 +82,25 @@ impl Tower {
         };
     }
 
-    pub fn deal_damage(&self) -> TowerDamage {
+    // These towers by themselfs will cause damage upon collision
+    pub fn collision_damage(&self) -> TowerDamage {
         match self {
-            _ => TowerDamage {
-                min_damage: 0.1,
-                max_damage: 0.25,
-            },
+            Tower::SpikePit => TowerDamage::new(0.050, 0.100),
+            Tower::Acid => TowerDamage::new(0.050, 0.100),
+            Tower::Flame => TowerDamage::new(0.050, 0.100),
+            _ => TowerDamage::default(),
         }
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct TowerDamage {
-    pub min_damage: f32,
-    pub max_damage: f32,
+    pub min: f32,
+    pub max: f32,
+}
+
+impl TowerDamage {
+    fn new(min: f32, max: f32) -> Self {
+        Self { min, max }
+    }
 }
