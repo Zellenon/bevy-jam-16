@@ -31,9 +31,9 @@ pub struct TowerSprites {
     #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 9, rows = 1))]
     tesla_layout: Handle<TextureAtlasLayout>,
 
-    #[asset(path = "images/towers/tower_bucket.png")]
+    #[asset(path = "images/towers/water.png")]
     water_sprite: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 256, tile_size_y = 256, columns = 4, rows = 1))]
+    #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 8, rows = 2))]
     water_layout: Handle<TextureAtlasLayout>,
 
     #[asset(path = "images/towers/acid.png")]
@@ -82,7 +82,7 @@ impl TowerSprites {
             Tower::Oil => &[0, 1],
             Tower::TrapDoor => &[0],
             Tower::Tesla => &[0, 1, 2, 3, 4],
-            Tower::Water => &[0, 1, 2, 3],
+            Tower::Water => &[0, 1, 2, 3, 4, 5, 6, 7],
             Tower::Acid => &[0, 1, 2],
             Tower::Flame => &[0, 1, 2],
             Tower::Portal => &[0],
@@ -93,6 +93,7 @@ impl TowerSprites {
     pub fn tower_attack_frames(&self, tower: &Tower) -> &'static [usize] {
         match tower {
             Tower::Tesla => &[5, 6, 7, 8],
+            Tower::Water => &[8, 9, 10],
             _ => todo!(),
         }
     }
@@ -102,7 +103,7 @@ impl TowerSprites {
 
         let mut animation_controller = AnimationFrameQueue::new(self.tower_idle_frames(tower));
 
-        if tower == &Tower::Tesla {
+        if tower == &Tower::Tesla || tower == &Tower::Water {
             animation_controller.set_override(self.tower_attack_frames(tower));
         }
 
