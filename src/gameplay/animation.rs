@@ -9,8 +9,9 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component)]
 pub struct AnimationFrameQueue {
     frames: &'static [usize],
-    timer: Timer,
+    frame_override: Option<&'static [usize]>,
     current_index: usize,
+    timer: Timer,
 }
 
 impl AnimationFrameQueue {
@@ -18,17 +19,9 @@ impl AnimationFrameQueue {
         assert!(!frames.is_empty(), "Animation frames cannot be empty");
         Self {
             frames,
-            timer: Timer::from_seconds(FRAME_DURATION, TimerMode::Repeating),
+            frame_override: None,
             current_index: 0,
-        }
-    }
-
-    pub fn tick_and_advance(&mut self, time: &Time, sprite: &mut TextureAtlas) {
-        self.timer.tick(time.delta());
-
-        if self.timer.just_finished() {
-            self.current_index = (self.current_index + 1) % self.frames.len();
-            sprite.index = self.frames[self.current_index];
+            timer: Timer::from_seconds(FRAME_DURATION, TimerMode::Repeating),
         }
     }
 
@@ -36,6 +29,39 @@ impl AnimationFrameQueue {
         assert!(!frames.is_empty(), "Animation frames cannot be empty");
         self.frames = frames;
         self.current_index = 0;
+        self.timer.reset();
+    }
+
+    pub fn set_override(&mut self, override_frames: &'static [usize]) {
+        assert!(
+            !override_frames.is_empty(),
+            "Override frames cannot be empty"
+        );
+        self.frame_override = Some(override_frames);
+        self.current_index = 0;
+        self.timer.reset();
+    }
+
+    pub fn tick_and_advance(&mut self, time: &Time, sprite: &mut TextureAtlas) {
+        self.timer.tick(time.delta());
+
+        let active_frames = self.frame_override.unwrap_or(self.frames);
+
+        if self.timer.just_finished() {
+            self.current_index += 1;
+
+            if self.current_index >= active_frames.len() {
+                if self.frame_override.is_some() {
+                    // One-shot override finished, revert to base animation
+                    self.frame_override = None;
+                    self.current_index = 0;
+                } else {
+                    self.current_index = 0;
+                }
+            }
+
+            sprite.index = active_frames[self.current_index];
+        }
     }
 }
 
