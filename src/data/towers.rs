@@ -15,6 +15,14 @@ pub enum Tower {
     Portal,
 }
 
+#[derive(Debug, Hash, PartialEq, Eq, Clone)]
+pub enum TowerPlacement {
+    Below,
+    Above,
+    Left,
+    Right,
+}
+
 impl Tower {
     pub fn all() -> Vec<Tower> {
         vec![
@@ -28,7 +36,6 @@ impl Tower {
             Tower::Tesla,
             Tower::Water,
             Tower::Flame,
-            Tower::Portal,
         ]
     }
 
