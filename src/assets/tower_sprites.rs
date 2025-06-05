@@ -1,6 +1,7 @@
-use crate::data::Tower;
+use crate::data::{Tower, TowerPlacement};
 use crate::gameplay::animation::AnimationFrameQueue;
 use crate::level::components::LEVEL_SCALING;
+use avian2d::parry::math::Orientation;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 
@@ -74,37 +75,13 @@ impl TowerSprites {
         }
     }
 
-    pub fn tower_idle_frames(&self, tower: &Tower) -> &'static [usize] {
-        match tower {
-            Tower::Piston => &[0, 1, 2, 3, 4, 5, 5, 5],
-            Tower::Fan => &[0, 1],
-            Tower::SpikePit => &[0],
-            Tower::Oil => &[0, 1],
-            Tower::TrapDoor => &[0],
-            Tower::Tesla => &[0, 1, 2, 3, 4],
-            Tower::Water => &[0, 1, 2, 3, 4, 5, 6, 7],
-            Tower::Acid => &[0, 1, 2],
-            Tower::Flame => &[0, 1, 2],
-            Tower::Portal => &[0],
-            Tower::Ice => &[0],
-        }
-    }
-
-    pub fn tower_attack_frames(&self, tower: &Tower) -> &'static [usize] {
-        match tower {
-            Tower::Tesla => &[5, 6, 7, 8],
-            Tower::Water => &[8, 9, 10],
-            _ => todo!(),
-        }
-    }
-
-    pub fn tower_bundle(&self, tower: &Tower) -> impl Bundle {
+    pub fn tower_bundle(&self, tower: &Tower, placement: &TowerPlacement) -> impl Bundle {
         let (image, atlas) = self.tower_sprite(tower);
 
-        let mut animation_controller = AnimationFrameQueue::new(self.tower_idle_frames(tower));
+        let mut animation_controller = AnimationFrameQueue::new(placement.idle_frames(tower));
 
         if tower == &Tower::Tesla || tower == &Tower::Water {
-            animation_controller.set_override(self.tower_attack_frames(tower));
+            animation_controller.set_override(placement.attack_frames(tower));
         }
 
         (
@@ -116,5 +93,41 @@ impl TowerSprites {
             },
             animation_controller,
         )
+    }
+}
+
+impl TowerPlacement {
+    pub fn idle_frames(&self, tower: &Tower) -> &'static [usize] {
+        match tower {
+            Tower::Piston => &[0, 1, 2, 3, 4, 5, 5, 5],
+            Tower::Fan => &[0, 1],
+            Tower::SpikePit => &[0],
+            Tower::Oil => &[0, 1],
+            Tower::TrapDoor => &[0],
+            Tower::Tesla => &[0, 1, 2, 3, 4],
+            Tower::Water => match self {
+                TowerPlacement::Above => &[0],
+                TowerPlacement::Below => &[12],
+                TowerPlacement::Left => &[24],
+                TowerPlacement::Right => &[24],
+            },
+            Tower::Acid => &[0, 1, 2],
+            Tower::Flame => &[0, 1, 2],
+            Tower::Portal => &[0],
+            Tower::Ice => &[0],
+        }
+    }
+
+    pub fn attack_frames(&self, tower: &Tower) -> &'static [usize] {
+        match tower {
+            Tower::Tesla => &[5, 6, 7, 8],
+            Tower::Water => match self {
+                TowerPlacement::Above => &[6, 7, 8, 9, 10],
+                TowerPlacement::Below => &[18, 19, 20, 21, 22],
+                TowerPlacement::Left => &[30, 31, 32, 33, 34],
+                TowerPlacement::Right => &[30, 31, 32, 33, 34],
+            },
+            _ => todo!(),
+        }
     }
 }

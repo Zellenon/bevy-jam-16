@@ -140,9 +140,10 @@ pub fn give_tower_sprite(
     mut commands: Commands,
 ) {
     let entity = trigger.target();
+    let tower = requests.get(entity).unwrap();
     commands
         .get_entity(entity)
         .unwrap()
-        .insert(sprites.tower_bundle(&requests.get(entity).unwrap().0))
+        .insert(sprites.tower_bundle(&tower.0, &tower.1.into()))
         .remove::<TowerSprite>();
 }

@@ -42,14 +42,6 @@ pub(super) fn plugin(app: &mut App) {
     );
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy, Reflect)]
-enum TowerPlacement {
-    Below,
-    Above,
-    Left,
-    Right,
-}
-
 #[derive(States, Default, Debug, Hash, PartialEq, Eq, Clone, Reflect)]
 enum TowerPlacementState {
     #[default]
@@ -78,26 +70,15 @@ fn tower_placement_change(
     };
     let sprites = sprites.expect("GameAssets should be available during turret placement");
 
-    let transform = match placement {
-        TowerPlacement::Above => Transform::from_xyz(0., 5., 0.),
-        TowerPlacement::Below => {
-            Transform::from_xyz(0., -5., 0.).with_rotation(Quat::from_rotation_z(PI))
-        }
-        TowerPlacement::Left => {
-            Transform::from_xyz(-5., 0., 0.).with_rotation(Quat::from_rotation_z(PI / 2.0))
-        }
-        TowerPlacement::Right => {
-            Transform::from_xyz(5., 0., 0.).with_rotation(Quat::from_rotation_z(-PI / 2.0))
-        }
-    };
-
     for entity in previews {
         commands.entity(entity).despawn()
     }
 
-    commands
-        .entity(*parent)
-        .with_child((sprites.tower_bundle(tower), transform, TowerPreview));
+    commands.entity(*parent).with_child((
+        sprites.tower_bundle(tower, placement),
+        placement.offset(),
+        TowerPreview,
+    ));
 }
 
 fn on_turret_placement_hover(
