@@ -31,9 +31,9 @@ pub struct TowerSprites {
     #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 9, rows = 1))]
     tesla_layout: Handle<TextureAtlasLayout>,
 
-    #[asset(path = "images/towers/water.png")]
+    #[asset(path = "images/towers/bucket.png")]
     water_sprite: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 8, rows = 2))]
+    #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 6, rows = 6))]
     water_layout: Handle<TextureAtlasLayout>,
 
     #[asset(path = "images/towers/acid.png")]
