@@ -50,12 +50,14 @@ pub fn chonkus_trooper() -> ComponentTree {
 }
 
 pub fn turbo_trooper() -> ComponentTree {
+    let animation = AnimationFrameQueue::new(&[0, 1, 2, 3, 4, 5, 6, 7]);
     name("Minor Trooper") + enemy_requirements(Vec2::new(2., 2.5), 45.)
-        << (Transform::from_scale(Vec3::splat(0.15)).store()
-            + image(GameAssets::ducky)
-            + layout(GameAssets::badguy_layout)
+        << (Transform::from_scale(Vec3::splat(0.10)).store()
+            + animation.store()
+            + image(GameAssets::trooper2)
+            + layout(GameAssets::trooper2_layout)
             + Pickable::default().store()
-            << health_bar(14.))
+            << health_bar(24.))
 }
 
 pub fn enemy_requirements(size: Vec2, speed: f32) -> ComponentTree {
