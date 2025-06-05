@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 pub mod animation;
 pub mod hotbar;
+pub mod hud;
 pub mod level;
 pub mod tower_placement;
 pub mod towers;
@@ -15,5 +16,6 @@ pub(super) fn plugin(app: &mut App) {
         tower_placement::plugin,
         wave_manager::plugin,
         animation::plugin,
+        hud::plugin,
     ));
 }

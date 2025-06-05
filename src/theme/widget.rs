@@ -2,13 +2,14 @@
 
 use std::borrow::Cow;
 
+use crate::theme::prelude::*;
+use crate::theme::{interaction::InteractionPalette, palette::*};
+use bevy::color::palettes::tailwind;
 use bevy::{
     ecs::{spawn::SpawnWith, system::IntoObserverSystem},
     prelude::*,
     ui::Val::*,
 };
-
-use crate::theme::{interaction::InteractionPalette, palette::*};
 
 /// A root UI node that fills the window and centers its content.
 pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
@@ -36,6 +37,16 @@ pub fn header(text: impl Into<String>) -> impl Bundle {
         Text(text.into()),
         TextFont::from_font_size(40.0),
         TextColor(HEADER_TEXT),
+    )
+}
+
+/// A simple header label. Bigger than [`label`].
+pub fn ui_font(text: impl Into<String>) -> impl Bundle {
+    (
+        Name::new("Text"),
+        Text(text.into()),
+        TextFont::from_font(BASE_FONT).with_font_size(18.0),
+        TextColor(tailwind::STONE_900.into()),
     )
 }
 
@@ -122,7 +133,7 @@ where
                     children![(
                         Name::new("Button Text"),
                         Text(text),
-                        TextFont::from_font_size(40.0),
+                        TextFont::from_font(BASE_FONT).with_font_size(40.0),
                         TextColor(BUTTON_TEXT),
                         // Don't bubble picking events from the text up to the button.
                         Pickable::IGNORE,

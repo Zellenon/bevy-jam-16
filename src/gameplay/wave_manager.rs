@@ -100,6 +100,12 @@ impl Default for WaveManager {
     }
 }
 
+impl WaveManager {
+    pub fn remaining_waves(&self) -> usize {
+        self.upcoming_waves.len()
+    }
+}
+
 impl From<Vec<ComponentTree>> for Group {
     fn from(value: Vec<ComponentTree>) -> Self {
         Self(value)
