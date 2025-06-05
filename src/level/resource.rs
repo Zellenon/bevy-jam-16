@@ -1,3 +1,4 @@
+use bevy::prelude::Transform;
 use bevy::{ecs::resource::Resource, math::Vec2, reflect::Reflect};
 
 // Temporary hardcoded map until I pull the asset-loading changes
@@ -15,7 +16,7 @@ pub const MAP_TEXT2: &'static str = "^<<<<
 
 // Which direction the enemies need to move in. If we end up adding splitting paths, this won't be
 // usable. It's mainly to help get a FWP going.
-#[derive(Clone, Copy, Debug, Reflect, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Hash, Reflect, PartialEq, Eq)]
 pub enum CellDirection {
     Up,
     Down,
@@ -49,6 +50,19 @@ impl Into<Vec2> for CellDirection {
 impl CellDirection {
     pub fn vec(self) -> Vec2 {
         self.into()
+    }
+
+    pub fn sprite_offset(&self) -> Transform {
+        match self {
+            /// Sprite is attached to cell above
+            CellDirection::Up => Transform::from_xyz(0., -5., 0.),
+            /// Sprite is attached to cell below
+            CellDirection::Down => Transform::from_xyz(0., 5., 0.),
+            /// Sprite is attached to cell to the left
+            CellDirection::Left => Transform::from_xyz(-5., 0., 0.),
+            /// Sprite is attached to cell to the right
+            CellDirection::Right => Transform::from_xyz(5., 0., 0.),
+        }
     }
 }
 

@@ -16,25 +16,6 @@ pub enum Tower {
     Portal,
 }
 
-#[derive(Debug, Hash, PartialEq, Eq, Clone, Copy, Reflect)]
-pub enum TowerPlacement {
-    Below,
-    Above,
-    Left,
-    Right,
-}
-
-impl From<CellDirection> for TowerPlacement {
-    fn from(direction: CellDirection) -> Self {
-        match direction {
-            CellDirection::Up => TowerPlacement::Above,
-            CellDirection::Down => TowerPlacement::Below,
-            CellDirection::Left => TowerPlacement::Left,
-            CellDirection::Right => TowerPlacement::Right,
-        }
-    }
-}
-
 impl Tower {
     pub fn all() -> Vec<Tower> {
         vec![

@@ -46,14 +46,14 @@ pub(super) fn plugin(app: &mut App) {
 enum TowerPlacementState {
     #[default]
     None,
-    Placing(Tower, Entity, TowerPlacement),
+    Placing(Tower, Entity, CellDirection),
 }
 
 #[derive(Component, Debug, Clone, Copy, Reflect)]
 struct TowerPreview;
 
 #[derive(Event, Debug, Clone, Copy, Reflect)]
-struct PlaceTower(pub Entity, pub Tower, pub TowerPlacement);
+struct PlaceTower(pub Entity, pub Tower, pub CellDirection);
 
 #[derive(Event, Debug, Clone, Copy, Reflect)]
 struct SelectTower(pub Entity);
@@ -76,7 +76,7 @@ fn tower_placement_change(
 
     commands.entity(*parent).with_child((
         sprites.tower_bundle(tower, placement),
-        placement.offset(),
+        placement.sprite_offset(),
         TowerPreview,
     ));
 }
@@ -104,21 +104,21 @@ fn on_turret_placement_hover(
 
     if let Ok(wall) = walls.get(entity) {
         let placement = match wall.0 {
-            WallDirection::Left => TowerPlacement::Left,
-            WallDirection::Right => TowerPlacement::Right,
+            WallDirection::Left => CellDirection::Left,
+            WallDirection::Right => CellDirection::Right,
         };
         next_tower_placement_state.set(TowerPlacementState::Placing(*tower, entity, placement));
     } else if ceilings.get(entity).is_ok() {
         next_tower_placement_state.set(TowerPlacementState::Placing(
             *tower,
             entity,
-            TowerPlacement::Below,
+            CellDirection::Up,
         ));
     } else if floors.get(entity).is_ok() {
         next_tower_placement_state.set(TowerPlacementState::Placing(
             *tower,
             entity,
-            TowerPlacement::Above,
+            CellDirection::Down,
         ));
     }
 }
@@ -155,30 +155,9 @@ fn click_tower(
 pub fn place_towers(mut place_events: EventReader<PlaceTower>, mut commands: Commands) {
     for PlaceTower(entity, tower_type, orientation) in place_events.read() {
         commands.entity(*entity).with_children(|commands| {
-            commands
-                .compose(tower(*tower_type, (*orientation).into()) + orientation.offset().store());
+            commands.compose(
+                tower(*tower_type, *orientation) + orientation.sprite_offset().store(),
+            );
         });
-    }
-}
-
-impl TowerPlacement {
-    pub fn offset(&self) -> Transform {
-        match self {
-            TowerPlacement::Above => Transform::from_xyz(0., 5., 0.),
-            TowerPlacement::Below => Transform::from_xyz(0., -5., 0.),
-            TowerPlacement::Left => Transform::from_xyz(-5., 0., 0.),
-            TowerPlacement::Right => Transform::from_xyz(5., 0., 0.),
-        }
-    }
-}
-
-impl Into<CellDirection> for TowerPlacement {
-    fn into(self) -> CellDirection {
-        match self {
-            TowerPlacement::Below => CellDirection::Up,
-            TowerPlacement::Above => CellDirection::Down,
-            TowerPlacement::Left => CellDirection::Right,
-            TowerPlacement::Right => CellDirection::Left,
-        }
     }
 }

@@ -13,7 +13,7 @@ pub use {
     status_effects::Ailments,
     status_effects::StatusEffect,
     status_effects::get_ailment,
-    towers::{Tower, TowerCollision, TowerPlacement, get_collison},
+    towers::{Tower, TowerCollision, get_collison},
 };
 
 pub(super) fn plugin(app: &mut App) {
