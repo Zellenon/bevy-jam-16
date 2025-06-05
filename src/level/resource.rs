@@ -1,5 +1,4 @@
-use bevy::prelude::Transform;
-use bevy::{ecs::resource::Resource, math::Vec2, reflect::Reflect};
+use bevy::prelude::*;
 
 // Temporary hardcoded map until I pull the asset-loading changes
 pub const MAP_TEXT: &'static str = "^<<v<
@@ -54,13 +53,11 @@ impl CellDirection {
 
     pub fn sprite_offset(&self) -> Transform {
         match self {
-            /// Sprite is attached to cell above
             CellDirection::Up => Transform::from_xyz(0., -5., 0.),
-            /// Sprite is attached to cell below
             CellDirection::Down => Transform::from_xyz(0., 5., 0.),
-            /// Sprite is attached to cell to the left
-            CellDirection::Left => Transform::from_xyz(-5., 0., 0.),
-            /// Sprite is attached to cell to the right
+            CellDirection::Left => {
+                Transform::from_xyz(-5., 0., 0.).with_scale(Vec3::new(-1., 1., 1.))
+            }
             CellDirection::Right => Transform::from_xyz(5., 0., 0.),
         }
     }

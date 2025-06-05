@@ -78,17 +78,21 @@ impl TowerSprites {
     pub fn tower_bundle(&self, tower: &Tower, direction: &CellDirection) -> impl Bundle {
         let (image, atlas) = self.tower_sprite(tower);
 
-        let mut animation_controller = AnimationFrameQueue::new(direction.idle_frames(tower));
+        let idle_frames = direction.idle_frames(tower);
+        let mut animation_controller = AnimationFrameQueue::new(idle_frames);
 
         if tower == &Tower::Tesla || tower == &Tower::Water {
             animation_controller.set_override(direction.attack_frames(tower));
         }
 
+        let mut atlas = TextureAtlas::from(atlas.clone());
+        atlas.index = idle_frames[0];
+
         (
             Sprite {
                 image: image.clone(),
                 custom_size: Some(Vec2::splat(LEVEL_SCALING)),
-                texture_atlas: Some(TextureAtlas::from(atlas.clone())),
+                texture_atlas: Some(atlas),
                 ..default()
             },
             animation_controller,
