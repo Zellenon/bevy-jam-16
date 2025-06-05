@@ -106,9 +106,9 @@ impl CellDirection {
             Tower::TrapDoor => &[0],
             Tower::Tesla => match self {
                 CellDirection::Down => &[0, 1, 2, 3, 4],
-                CellDirection::Up => &[12, 13, 14, 15, 16],
-                CellDirection::Left => &[24, 25, 26, 27, 28],
-                CellDirection::Right => &[24, 25, 26, 27, 28],
+                CellDirection::Up => &[10, 11, 12, 13, 14],
+                CellDirection::Left => &[20, 21, 22, 23, 24],
+                CellDirection::Right => &[20, 21, 22, 23, 24],
             },
             Tower::Water => match self {
                 CellDirection::Down => &[0],
@@ -126,10 +126,10 @@ impl CellDirection {
     pub fn attack_frames(&self, tower: &Tower) -> &'static [usize] {
         match tower {
             Tower::Tesla => match self {
-                CellDirection::Down => &[6, 7, 8],
-                CellDirection::Up => &[18, 19, 20, 21],
-                CellDirection::Left => &[30, 31, 32, 33],
-                CellDirection::Right => &[30, 31, 32, 33],
+                CellDirection::Down => &[5, 6, 7, 8],
+                CellDirection::Up => &[15, 16, 17, 18],
+                CellDirection::Left => &[25, 26, 27, 28],
+                CellDirection::Right => &[25, 26, 27, 28],
             },
             Tower::Water => match self {
                 CellDirection::Down => &[6, 7, 8, 9, 10],
