@@ -85,14 +85,14 @@ impl TowerSprites {
             animation_controller.set_override(direction.attack_frames(tower));
         }
 
-        let mut atlas = TextureAtlas::from(atlas.clone());
-        atlas.index = idle_frames[0];
-
         (
             Sprite {
                 image: image.clone(),
                 custom_size: Some(Vec2::splat(LEVEL_SCALING)),
-                texture_atlas: Some(atlas),
+                texture_atlas: Some(TextureAtlas {
+                    index: idle_frames[0],
+                    layout: atlas.clone(),
+                }),
                 ..default()
             },
             animation_controller,
