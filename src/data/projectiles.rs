@@ -1,4 +1,4 @@
-use bevy::{ecs::component::Component, reflect::Reflect, time::Timer};
+use bevy::prelude::*;
 
 use super::StatusEffect;
 
@@ -40,6 +40,18 @@ pub enum DamageType {
     Cold,
     Lightning,
     Chemical,
+}
+
+impl DamageType {
+    pub fn status_effect(&self) -> StatusEffect {
+        match self {
+            DamageType::Physical => StatusEffect::Slowed,
+            DamageType::Burning => StatusEffect::Burned,
+            DamageType::Cold => StatusEffect::Frozen,
+            DamageType::Lightning => StatusEffect::Electrified,
+            DamageType::Chemical => StatusEffect::Acidic,
+        }
+    }
 }
 
 impl Lifetime {
