@@ -2,6 +2,7 @@ use crate::demo::enemy_health::{DoDamageToEnemy, EnemyHealth};
 use crate::prelude::*;
 use crate::theme::prelude::*;
 use bevy::prelude::*;
+use bevy_turborand::{DelegatedRng, GlobalRng};
 
 pub(super) fn plugin(app: &mut App) {
     // app.add_systems(OnEnter(Screen::Gameplay), spawn_damage_container);
@@ -28,23 +29,29 @@ pub fn show_damage_numbers(
     mut events: EventReader<DoDamageToEnemy>,
     enemies: Query<&Transform, With<EnemyHealth>>,
     // tag_parent: Single<Entity, With<DamageNumberContainer>>,
+    mut rng: ResMut<GlobalRng>,
+
     mut commands: Commands,
 ) {
     for event in events.read() {
         let Ok(transform) = enemies.get(event.enemy) else {
             continue;
         };
+        let mut translation = transform.translation.clone();
+        translation.x += (rng.f32() - 0.5) * 3.0;
+        translation.y += (rng.f32() - 0.5) * 2.0;
+
         commands.spawn((
             StateScoped(Screen::Gameplay),
-            Text2d::new(event.damage.to_string()),
+            Text2d::new(((event.damage * 100.) as i32).to_string()),
             TextColor(event.damage_type.status_effect().color()),
-            TextFont::from_font_size(24.0).with_font(BASE_FONT),
+            TextFont::from_font_size(18.0).with_font(BASE_FONT),
             DamageNumber,
             DamageNumberLifetime {
                 timer: Timer::from_seconds(0.6, TimerMode::Once),
                 velocity: Vec3::Y * 0.8, // upward movement
             },
-            transform.clone().with_scale(Vec3::splat(0.1)),
+            Transform::from_translation(translation).with_scale(Vec3::splat(0.1)),
         ));
 
         // println!("Damage numbers {:?}", transform.translation);
