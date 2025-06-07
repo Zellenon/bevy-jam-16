@@ -2,7 +2,6 @@ use crate::assets::ui_assets::UiAssets;
 use crate::audio::sound_effect;
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng};
-use rand::prelude::IteratorRandom;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<InteractionPalette>();

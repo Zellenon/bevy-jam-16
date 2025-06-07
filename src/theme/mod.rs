@@ -25,20 +25,20 @@ pub(super) fn plugin(app: &mut App) {
     load_internal_binary_asset!(
         app,
         handles::TITLE_FONT,
-        "../../assets/fonts/Robotica.ttf",
+        "../../assets/tower_combinator/fonts/Robotica.ttf",
         // "../../assets/fonts/Kenney Future Narrow.ttf",
         load_font_from_bytes
     );
     load_internal_binary_asset!(
         app,
         handles::LABEL_FONT,
-        "../../assets/fonts/Robotica.ttf",
+        "../../assets/tower_combinator/fonts/Robotica.ttf",
         load_font_from_bytes
     );
     load_internal_binary_asset!(
         app,
         handles::BODY_FONT,
-        "../../assets/fonts/Roboto-Regular.ttf",
+        "../../assets/tower_combinator/fonts/Roboto-Regular.ttf",
         load_font_from_bytes
     );
 }

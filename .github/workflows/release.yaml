@@ -27,7 +27,7 @@ env:
   cargo_build_binary_name: tower_combinator
 
   # The path to the assets directory.
-  assets_path: assets
+  assets_path: assets/tower_combinator
 
   # Whether to build and package a release for a given target platform.
   build_for_web: true
