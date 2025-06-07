@@ -49,6 +49,50 @@ pub struct StartNode;
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Component, Reflect)]
 pub struct EndNode;
 
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Reflect)]
+pub enum GeneralPosition {
+    UpDown,
+    LeftRight,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Reflect)]
+pub enum ExactPosition {
+    Floor,
+    Ceiling,
+    Wall(WallDirection),
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Component, Reflect)]
+pub struct Adjacent {
+    pub id: AdjacentId,
+    pub exact_position: ExactPosition,
+}
+
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Component, Reflect)]
+pub struct AdjacentId {
+    pub unit_x: usize,
+    pub unit_y: usize,
+    pub general_position: GeneralPosition,
+}
+
+impl Adjacent {
+    pub fn new(
+        unit_x: usize,
+        unit_y: usize,
+        position: GeneralPosition,
+        exact: ExactPosition,
+    ) -> Self {
+        Self {
+            id: AdjacentId {
+                unit_x,
+                unit_y,
+                general_position: position,
+            },
+            exact_position: exact,
+        }
+    }
+}
+
 impl LevelParent {
     pub fn from_data(
         level_data: &Level,
@@ -90,12 +134,24 @@ impl LevelParent {
                             (x as f32 - 0.5 - (WALL_TOTAL_WIDTH / 4.)) * LEVEL_SCALING,
                             y as f32 * LEVEL_SCALING,
                             WallDirection::Left,
+                        ) + Adjacent::new(
+                            x,
+                            y,
+                            GeneralPosition::LeftRight,
+                            ExactPosition::Wall(WallDirection::Left),
                         )
+                        .store()
                         << wall(
                             (x as f32 - 0.5 + (WALL_TOTAL_WIDTH / 4.)) * LEVEL_SCALING,
                             y as f32 * LEVEL_SCALING,
                             WallDirection::Right,
-                        );
+                        ) + Adjacent::new(
+                            x,
+                            y,
+                            GeneralPosition::LeftRight,
+                            ExactPosition::Wall(WallDirection::Right),
+                        )
+                        .store();
                 }
             }
         }
@@ -106,11 +162,13 @@ impl LevelParent {
                         << ceiling(
                             x as f32 * LEVEL_SCALING,
                             ((y as f32) - 0.5 - FLOOR_TOTAL_HEIGHT / 4.) * LEVEL_SCALING,
-                        )
+                        ) + Adjacent::new(x, y, GeneralPosition::UpDown, ExactPosition::Ceiling)
+                            .store()
                         << floor(
                             x as f32 * LEVEL_SCALING,
                             ((y as f32) - 0.5 + FLOOR_TOTAL_HEIGHT / 4.) * LEVEL_SCALING,
-                        );
+                        ) + Adjacent::new(x, y, GeneralPosition::UpDown, ExactPosition::Floor)
+                            .store();
                 }
             }
         }

@@ -15,6 +15,8 @@ pub fn tower(tower: Tower, direction: CellDirection) -> ComponentTree {
         if tower.has_trigger_zone() {
             if tower.gravity_influences_trigger() {
                 ().store() << (trigger_zone(Vec2::new(9., 9.5)) + TowerTriggerNeedsGravity.store())
+            } else if let Some(custom_trigger_zone) = tower.custom_trigger_zone() {
+                ().store() << (trigger_zone(custom_trigger_zone))
             } else {
                 ().store() << trigger_zone(Vec2::new(9., 9.))
             }

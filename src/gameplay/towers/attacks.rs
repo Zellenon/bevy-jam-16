@@ -24,7 +24,10 @@ use crate::{
         projectiles::{AttackEffect, AttackType, DamageType, Droplet, LiquidType, Puddle},
     },
     demo::enemy_health::{EnemyHealth, TryDamageToEnemy},
-    gameplay::{animation::AnimationFrameQueue, status_effects::common::TryApplyStatus},
+    gameplay::{
+        animation::AnimationFrameQueue, status_effects::common::TryApplyStatus,
+        towers::trap_door::DetectTrapDoor,
+    },
     level::{
         components::{Architecture, pos},
         resource::CellDirection,
@@ -53,6 +56,7 @@ pub fn do_tower_attacks(
     mut fire_events: EventReader<TowerFired>,
     mut contact_events: EventWriter<AttackEnemiesInContact>,
     mut drop_events: EventWriter<DropLiquid>,
+    mut detect_trap_door_events: EventWriter<DetectTrapDoor>,
     towers: Query<(&Tower, &Children, &GlobalTransform)>,
     ranges: Query<(), With<TowerTriggerRange>>,
 ) {
@@ -79,7 +83,9 @@ pub fn do_tower_attacks(
                 bevy::prelude::info!(entity = ?event.0, liquid_type = ?liquid_type, "here i am");
                 drop_events.write(DropLiquid(event.0, liquid_type));
             }
-            AttackType::ModifiesSelf => todo!(),
+            AttackType::ModifiesSelf => {
+                detect_trap_door_events.write(DetectTrapDoor(event.0));
+            }
         }
     }
 }

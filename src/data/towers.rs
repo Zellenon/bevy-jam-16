@@ -115,6 +115,13 @@ impl Tower {
         }
     }
 
+    pub fn custom_trigger_zone(&self) -> Option<Vec2> {
+        match self {
+            Tower::TrapDoor => Some(Vec2::new(10.0, 10.0)),
+            _ => None,
+        }
+    }
+
     pub fn attack_def(&self) -> AttackType {
         match self {
             Tower::Piston => AttackType::EntireCell(vec![
@@ -147,13 +154,27 @@ impl Tower {
             Tower::Fan => 0.,
             Tower::SpikePit => 0.32,
             Tower::Oil => 2.0,
-            Tower::TrapDoor => 3.0,
+            Tower::TrapDoor => 1.5,
             Tower::Ice => 0.67,
             Tower::Acid => 2.0,
             Tower::Tesla => 0.67,
             Tower::Water => 2.0,
             Tower::Flame => 0.67,
             Tower::Portal => 3.0,
+        }
+    }
+
+    pub fn requires_adjecent_wall(&self) -> bool {
+        match self {
+            Tower::TrapDoor => true,
+            _ => false,
+        }
+    }
+
+    pub fn requires_floor_placement(&self) -> bool {
+        match self {
+            Tower::TrapDoor => true,
+            _ => false,
         }
     }
 }

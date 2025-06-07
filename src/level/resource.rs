@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::data::Tower;
+
 // Temporary hardcoded map until I pull the asset-loading changes
 
 pub const MAP_TEXT: &'static str = "^<<v<
@@ -55,14 +57,18 @@ impl CellDirection {
         self.into()
     }
 
-    pub fn sprite_offset(&self) -> Transform {
-        match self {
-            CellDirection::Up => Transform::from_xyz(0., -5., 0.),
-            CellDirection::Down => Transform::from_xyz(0., 5., 0.),
-            CellDirection::Left => {
-                Transform::from_xyz(-5., 0., 0.).with_scale(Vec3::new(-1., 1., 1.))
-            }
-            CellDirection::Right => Transform::from_xyz(5., 0., 0.),
+    pub fn sprite_offset(&self, tower: &Tower) -> Transform {
+        match tower {
+            Tower::TrapDoor => Transform::from_xyz(0., 0., 0.),
+
+            _ => match self {
+                CellDirection::Up => Transform::from_xyz(0., -5., 0.),
+                CellDirection::Down => Transform::from_xyz(0., 5., 0.),
+                CellDirection::Left => {
+                    Transform::from_xyz(-5., 0., 0.).with_scale(Vec3::new(-1., 1., 1.))
+                }
+                CellDirection::Right => Transform::from_xyz(5., 0., 0.),
+            },
         }
     }
 }

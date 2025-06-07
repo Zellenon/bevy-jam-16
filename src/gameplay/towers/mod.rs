@@ -18,7 +18,9 @@ use liquids::{
     drop_liquids, puddle_attacks, splat_droplets, stop_dropping_puddles, tick_lifetimes,
     timeout_lifetimes,
 };
+
 use std::f32;
+use trap_door::{DetectTrapDoor, OpenTrapDoor, close_trap_door, detect_trap_door, open_trap_door};
 
 use super::{stats::StatSet, status_effects::common::status_debuff_multiplier};
 use crate::{
@@ -41,6 +43,7 @@ pub mod common;
 pub mod gravity_bullshit;
 pub mod liquids;
 pub mod tesla;
+pub mod trap_door;
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<TowerTriggerRange>()
@@ -53,7 +56,9 @@ pub(super) fn plugin(app: &mut App) {
     app.add_event::<DropLiquid>()
         .add_event::<TowerFired>()
         .add_event::<ApplyAttackEffect>()
-        .add_event::<AttackEnemiesInContact>();
+        .add_event::<AttackEnemiesInContact>()
+        .add_event::<DetectTrapDoor>()
+        .add_event::<OpenTrapDoor>();
 
     app.add_observer(add_observer_to_component::<Puddle, _, _, _, _>(
         stop_dropping_puddles,
@@ -74,7 +79,13 @@ pub(super) fn plugin(app: &mut App) {
             (
                 towers_fire,
                 do_tower_attacks,
-                (attack_contact_enemies, drop_liquids),
+                (
+                    attack_contact_enemies,
+                    drop_liquids,
+                    detect_trap_door,
+                    open_trap_door,
+                    close_trap_door,
+                ),
                 dispatch_attack_effects,
             )
                 .chain(),

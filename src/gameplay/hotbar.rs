@@ -23,7 +23,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component, Debug, Reflect)]
-struct HotbarItem;
+pub struct HotbarItem;
 
 #[derive(Component)]
 struct CancelInput;
