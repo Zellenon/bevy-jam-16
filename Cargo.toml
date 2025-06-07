@@ -114,5 +114,5 @@ getrandom = { version = "0.3", features = ["wasm_js"] }
 # in your rustflags for both local and CI/CD web builds, taking into account that rustflags specified in
 # multiple places are NOT combined (see <https://github.com/rust-lang/cargo/issues/5376>).
 # Alternatively, you can opt out of the rustflags check with this patch:
-#[patch.crates-io]
+[patch.crates-io]
 getrandom = { git = "https://github.com/benfrankel/getrandom" }
