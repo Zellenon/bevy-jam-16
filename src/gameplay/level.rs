@@ -48,7 +48,7 @@ pub fn spawn_level(
     mut commands: Commands,
     mut level: ResMut<Level>,
     level_assets: Res<LevelAssets>,
-    mut rng: ResMut<GlobalRng>,
+    rng: ResMut<GlobalRng>,
 ) {
     commands.insert_resource(ClearColor(tailwind::SLATE_700.into()));
 
@@ -62,7 +62,7 @@ pub fn spawn_level(
 
 pub fn despawn_enemy_on_goal(
     mut commands: Commands,
-    mut enemies: Query<(Entity, &Transform), With<EnemyHealth>>,
+    enemies: Query<(Entity, &Transform), With<EnemyHealth>>,
     goal: Query<&Transform, With<EndNode>>,
     mut game_state: ResMut<PlayerState>,
 ) {
@@ -70,7 +70,7 @@ pub fn despawn_enemy_on_goal(
         let goal_pos = goal_pos.translation.xy();
         for (e, pos) in enemies.iter() {
             if pos.translation.xy().distance(goal_pos) < 7. {
-                commands.get_entity(e).unwrap().despawn_recursive();
+                commands.get_entity(e).unwrap().despawn();
                 game_state.health -= 1;
                 println!("Damage Taken!");
             }

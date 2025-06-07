@@ -140,7 +140,7 @@ pub fn tick_statuses<T: StatusEffectTrait>(
 }
 
 pub fn timeout_statuses<T: StatusEffectTrait>(
-    mut enemies: Query<(Entity, &StatusEffect<T>)>,
+    enemies: Query<(Entity, &StatusEffect<T>)>,
     mut events: EventWriter<RemoveStatus<T>>,
 ) {
     for (enemy, status) in enemies.iter() {

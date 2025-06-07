@@ -52,8 +52,6 @@ fn place_tower_preview(
     previews: Query<Entity, With<TowerPreview>>,
     sprites: Option<Res<TowerSprites>>,
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     let Some(TowerPlacementEvent::Requested(tower, parent, placement)) =
         tower_placement_events.read().last()

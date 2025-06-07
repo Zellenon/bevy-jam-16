@@ -210,8 +210,6 @@ jobs:
       - name: Build and add web bundle to app (Web)
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform == 'web' }}
         run: |
-          ls
-          cargo metadata
           cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
           echo "STARTING BUILD"

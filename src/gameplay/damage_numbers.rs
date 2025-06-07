@@ -22,7 +22,7 @@ struct DamageNumberLifetime {
     velocity: Vec3,
 }
 
-pub fn show_damage_numbers(
+fn show_damage_numbers(
     mut events: EventReader<DoDamageToEnemy>,
     enemies: Query<&Transform, With<EnemyHealth>>,
     mut rng: ResMut<GlobalRng>,
@@ -52,7 +52,7 @@ pub fn show_damage_numbers(
     }
 }
 
-pub fn animate_damage_numbers(
+fn animate_damage_numbers(
     mut commands: Commands,
     time: Res<Time>,
     mut query: Query<
