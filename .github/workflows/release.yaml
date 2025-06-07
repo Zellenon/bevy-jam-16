@@ -206,6 +206,7 @@ jobs:
         if: ${{ env.is_platform_enabled == 'true' }}
         run: |
           ls
+          ls src
           cargo binstall --locked --no-confirm --force --git='https://github.com/TheBevyFlock/bevy_cli' bevy_cli
 
       - name: Build and add web bundle to app (Web)
