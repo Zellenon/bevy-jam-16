@@ -205,15 +205,15 @@ jobs:
       - name: Install Bevy CLI
         if: ${{ env.is_platform_enabled == 'true' }}
         run: |
-          ls
-          ls src
           cargo binstall --locked --no-confirm --force --git='https://github.com/TheBevyFlock/bevy_cli' bevy_cli
 
       - name: Build and add web bundle to app (Web)
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform == 'web' }}
         run: |
+          ls
           cargo binstall --locked --no-confirm --force wasm-bindgen-cli
           cargo binstall --locked --no-confirm --force wasm-opt
+          echo "STARTING BUILD"
           bevy build --locked --release --features='${{ matrix.features }}' --yes web --bundle
           mv 'target/bevy_web/web-release/${{ env.cargo_build_binary_name }}' '${{ env.app }}'
 
