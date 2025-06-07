@@ -1,6 +1,8 @@
 name: Release
 
 on:
+  pull_request:
+    branches: [ "main" ]
   # Trigger this workflow when a tag is pushed in the format `v1.2.3`.
   push:
     tags:
@@ -37,7 +39,7 @@ env:
 
   # The itch.io project to upload to in the format `user-name/project-name`.
   # There will be no upload to itch.io if this is commented out.
-  #  upload_to_itch: the-bevy-flock/bevy-new-2d
+  #upload_to_itch: your-itch-username/{{project-name}}
 
   ############
   # ADVANCED #
@@ -51,7 +53,7 @@ env:
   # The base filename of the binary in the package produced by this workflow.
   # Applies to Windows, macOS, and Linux releases.
   # Defaults to `cargo_build_binary_name` if commented out.
-  #app_binary_name: bevy_new_2d
+  app_binary_name: zods_tower_combinator
 
   # The name of the `.zip` or `.dmg` file produced by this workflow.
   # Defaults to `app_binary_name` if commented out.
@@ -202,7 +204,9 @@ jobs:
 
       - name: Install Bevy CLI
         if: ${{ env.is_platform_enabled == 'true' }}
-        run: cargo binstall --locked --no-confirm --force --git='https://github.com/TheBevyFlock/bevy_cli' bevy_cli
+        run: |
+          ls
+          cargo binstall --locked --no-confirm --force --git='https://github.com/TheBevyFlock/bevy_cli' bevy_cli
 
       - name: Build and add web bundle to app (Web)
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform == 'web' }}
