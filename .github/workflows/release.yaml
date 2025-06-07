@@ -1,8 +1,9 @@
 name: Release
 
 on:
-  pull_request:
-    branches: [ "main" ]
+  # uncomment the following 2 lines to test this workflow
+  #  pull_request:
+  #    branches: [ "main" ]
   # Trigger this workflow when a tag is pushed in the format `v1.2.3`.
   push:
     tags:

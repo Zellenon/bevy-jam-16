@@ -1,10 +1,5 @@
-use bevy::{
-    color::palettes::css::{AQUA, GREY, LIME, ORANGE, YELLOW},
-    prelude::*,
-};
-use std::sync::Arc;
-
-use super::status_effects::{StatusEffect, StatusEffectTrait, StatusEnum};
+use super::status_effects::*;
+use bevy::{color::palettes::css::*, prelude::*};
 
 #[derive(Clone, Debug, Reflect, PartialEq, Eq)]
 pub enum AttackType {

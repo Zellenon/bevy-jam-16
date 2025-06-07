@@ -23,7 +23,7 @@ use crate::{
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (despawn_enemy_on_goal)
+        despawn_enemy_on_goal
             .in_set(PausableSystems)
             .run_if(in_state(Screen::Gameplay)),
     );

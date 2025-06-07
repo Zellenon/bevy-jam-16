@@ -1,8 +1,7 @@
 //! The screen state for the main gameplay.
 
 use crate::data::{PlayerState, PointerInteractionState};
-use crate::{Pause, gameplay::level::spawn_level, menus::Menu, screens::Screen};
-use bevy::log::tracing_subscriber::filter::FilterExt;
+use crate::{gameplay::level::spawn_level, menus::Menu, screens::Screen, Pause};
 use bevy::{input::common_conditions::input_just_pressed, prelude::*, ui::Val::*};
 
 pub(super) fn plugin(app: &mut App) {
