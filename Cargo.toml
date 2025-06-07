@@ -60,11 +60,6 @@ type_complexity = "allow"
 # Make sure macros use their standard braces, such as `[]` for `bevy_ecs::children!`.
 nonstandard_macro_braces = "warn"
 
-# TEMP - unblock builds
-unused_async = "warn"
-unused_variables = "warn"
-unused_parens = "warn"
-
 # You can configure the warning levels of Bevy lints here. For a list of all lints, see:
 # <https://thebevyflock.github.io/bevy_cli/bevy_lint/lints/>
 [package.metadata.bevy_lint]
