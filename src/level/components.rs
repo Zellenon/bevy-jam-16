@@ -1,22 +1,12 @@
-use avian2d::prelude::{Collider, CollisionLayers, RigidBody};
-use bevy::ecs::system::{Res, ResMut};
-use bevy::image::TextureAtlas;
-use bevy::math::Quat;
-use bevy::picking::Pickable;
-use bevy::prelude::Name;
-use bevy::{
-    color::Color, ecs::component::Component, math::Vec2, prelude::info, reflect::Reflect,
-    render::view::Visibility, sprite::Sprite, transform::components::Transform, utils::default,
-};
-use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree, wrappers::name};
-use bevy_turborand::DelegatedRng;
-use bevy_turborand::GlobalRng;
-use std::f32::consts::PI;
-
-use crate::assets::{GameAssets, LevelAssets, game_assets};
-use crate::prefabs::physics::GamePhysicsLayer as GPL;
-
 use super::resource::{CellDirection, Level};
+use crate::assets::{LevelAssets, game_assets};
+use crate::gameplay::animation::AnimationFrameQueue;
+use crate::prefabs::physics::GamePhysicsLayer as GPL;
+use avian2d::prelude::{Collider, CollisionLayers, RigidBody};
+use bevy::prelude::*;
+use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree, wrappers::name};
+use bevy_turborand::{DelegatedRng, GlobalRng};
+use std::f32::consts::PI;
 
 pub const WALL_TOTAL_WIDTH: f32 = 0.10;
 pub const FLOOR_TOTAL_HEIGHT: f32 = 0.10;
@@ -191,7 +181,16 @@ impl LevelParent {
                 start_node.0.y * LEVEL_SCALING,
                 start_node.1,
                 last_direction,
-            ) + StartNode.store());
+            ) + StartNode.store()
+                + AnimationFrameQueue::new(&[0, 1, 2, 3, 4]).store()
+                + Sprite {
+                    image: level_assets.enemy_spawner.clone(),
+                    texture_atlas: Some(TextureAtlas::from(level_assets.spawner_layout.clone())),
+                    custom_size: Some(Vec2::splat(LEVEL_SCALING * 0.8)),
+                    color: Color::WHITE.with_alpha(0.95),
+                    ..default()
+                }
+                .store());
         let mut path_iter = path_iter.rev();
         let last_node = path_iter.next().unwrap();
         let path_iter = path_iter.rev();
@@ -320,7 +319,7 @@ pub fn node(
     direction: CellDirection,
     prev_direction: CellDirection,
 ) -> ComponentTree {
-    (PathNode::new(direction, prev_direction)).store() + pos(x, y)
+    PathNode::new(direction, prev_direction).store() + pos(x, y)
 }
 
 pub fn pos(x: f32, y: f32) -> ComponentTree {
