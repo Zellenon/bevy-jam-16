@@ -46,7 +46,7 @@ fn show_damage_numbers(
                 timer: Timer::from_seconds(0.6, TimerMode::Once),
                 velocity: Vec3::Y * 0.8, // upward movement
             },
-            Transform::from_translation(translation).with_scale(Vec3::splat(0.15)),
+            Transform::from_translation(translation).with_scale(Vec3::splat(0.1)),
         ));
     }
 }
