@@ -52,8 +52,6 @@ pub fn spawn_level(
     level_assets: Res<LevelAssets>,
     rng: ResMut<GlobalRng>,
 ) {
-    commands.insert_resource(ClearColor(tailwind::SLATE_700.into()));
-
     *level = Level::from_str(MAP_TEXT);
     commands
         .compose(

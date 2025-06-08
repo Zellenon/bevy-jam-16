@@ -1,6 +1,7 @@
 use bevy::prelude::*;
 
 pub mod animation;
+mod background;
 mod damage_numbers;
 pub mod hotbar;
 pub mod hud;
@@ -27,5 +28,6 @@ pub(super) fn plugin(app: &mut App) {
         tower_placement::plugin,
         wave_manager::plugin,
         messages::plugin,
+        background::plugin,
     ));
 }
