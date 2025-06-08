@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use std::f32::consts::PI;
 
 use crate::data::Tower;
 
@@ -65,9 +66,11 @@ impl CellDirection {
                 CellDirection::Up => Transform::from_xyz(0., -5., 0.),
                 CellDirection::Down => Transform::from_xyz(0., 5., 0.),
                 CellDirection::Left => {
-                    Transform::from_xyz(-5., 0., 0.).with_scale(Vec3::new(-1., 1., 1.))
+                    Transform::from_xyz(0., 5., 0.).with_rotation(Quat::from_rotation_z(PI / 2.0))
                 }
-                CellDirection::Right => Transform::from_xyz(5., 0., 0.),
+                CellDirection::Right => Transform::from_xyz(0., -5., 0.)
+                    .with_scale(Vec3::new(-1., 1., 1.))
+                    .with_rotation(Quat::from_rotation_z(PI / 2.0)),
             },
         }
     }

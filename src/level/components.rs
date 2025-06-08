@@ -1,6 +1,7 @@
 use avian2d::prelude::{Collider, CollisionLayers, RigidBody};
 use bevy::ecs::system::{Res, ResMut};
 use bevy::image::TextureAtlas;
+use bevy::math::Quat;
 use bevy::picking::Pickable;
 use bevy::prelude::Name;
 use bevy::{
@@ -10,6 +11,7 @@ use bevy::{
 use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree, wrappers::name};
 use bevy_turborand::DelegatedRng;
 use bevy_turborand::GlobalRng;
+use std::f32::consts::PI;
 
 use crate::assets::{GameAssets, LevelAssets, game_assets};
 use crate::prefabs::physics::GamePhysicsLayer as GPL;
@@ -132,6 +134,7 @@ impl LevelParent {
                 if level_data.walls[x][y] {
                     level = level
                         << wall(
+                            level_assets,
                             (x as f32 - 0.5 - (WALL_TOTAL_WIDTH / 4.)) * LEVEL_SCALING,
                             y as f32 * LEVEL_SCALING,
                             WallDirection::Left,
@@ -143,6 +146,7 @@ impl LevelParent {
                         )
                         .store()
                         << wall(
+                            level_assets,
                             (x as f32 - 0.5 + (WALL_TOTAL_WIDTH / 4.)) * LEVEL_SCALING,
                             y as f32 * LEVEL_SCALING,
                             WallDirection::Right,
@@ -203,7 +207,12 @@ impl LevelParent {
     }
 }
 
-pub fn wall(x: f32, y: f32, direction: WallDirection) -> ComponentTree {
+pub fn wall(
+    level_assets: &Res<LevelAssets>,
+    x: f32,
+    y: f32,
+    direction: WallDirection,
+) -> ComponentTree {
     (
         Wall(direction),
         Architecture,
@@ -211,19 +220,25 @@ pub fn wall(x: f32, y: f32, direction: WallDirection) -> ComponentTree {
         Collider::rectangle(WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING, LEVEL_SCALING),
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
+        Name::new("Wall"),
     )
         .store()
-        + name("Wall")
-        + rect_sprite(
-            x,
-            y,
-            LEVEL_SCALING,
-            WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING,
-            match direction {
-                WallDirection::Left => Color::srgba(0.9, 0.1, 0.1, 1.0),
-                WallDirection::Right => Color::srgba(0.8, 0.3, 0.0, 1.0),
+        + pos(x, y)
+        << (
+            Wall(direction),
+            Pickable::default(),
+            Transform::from_xyz(0.0, 0.0, 0.1).with_rotation(Quat::from_rotation_z(PI / 2.0)),
+            Sprite {
+                image: level_assets.level.clone(),
+                custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
+                texture_atlas: Some(TextureAtlas {
+                    layout: level_assets.level_layout.clone(),
+                    index: 2,
+                }),
+                ..default()
             },
         )
+            .store()
 }
 
 pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
