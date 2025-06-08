@@ -18,12 +18,14 @@ use bevy_composable::{
 };
 use std::{collections::VecDeque, time::Duration};
 
+use crate::assets::SoundEffects;
+use crate::audio::sound_effect;
 use crate::{
     PausableSystems,
     assets::UiAssets,
     level::components::StartNode,
     prefabs::enemies::{basic_trooper, chonkus_trooper, turbo_trooper},
-    screens::Screen,
+    prelude::*,
     theme::widget,
 };
 
@@ -78,6 +80,7 @@ pub fn spawn_next_wave(
     mut wave_manager: ResMut<WaveManager>,
     mut commands: Commands,
     start_loc: Query<&Transform, With<StartNode>>,
+    sfx: Res<SoundEffects>,
 ) {
     if wave_manager.wave_timer.finished() {
         if let (Some(wave), Ok(loc)) = (wave_manager.current_wave.as_mut(), start_loc.single()) {
@@ -87,6 +90,7 @@ pub fn spawn_next_wave(
                 }
                 wave_manager.wave_timer.set_duration(duration);
                 wave_manager.wave_timer.reset();
+                commands.spawn(sound_effect(sfx.enemy_spawn_sfx.clone()));
             } else {
                 wave_manager.current_wave = None;
             }

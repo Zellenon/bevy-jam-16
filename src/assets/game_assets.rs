@@ -15,20 +15,8 @@ pub struct GameAssets {
         rows = 2,
         padding_x = 1,
         padding_y = 1,
-        offset_x = 0,
-        offset_y = 0
     ))]
     pub ducky_layout: Handle<TextureAtlasLayout>,
-    #[asset(
-        paths(
-            "audio/sound_effects/step1.ogg",
-            "audio/sound_effects/step2.ogg",
-            "audio/sound_effects/step3.ogg",
-            "audio/sound_effects/step4.ogg",
-        ),
-        collection(typed)
-    )]
-    pub steps: Vec<Handle<AudioSource>>,
     #[asset(path = "audio/music/tuba-invaders.ogg")]
     pub tubamusic: Handle<AudioSource>,
     #[asset(path = "audio/music/Fluffing A Duck.ogg")]
@@ -41,21 +29,12 @@ pub struct GameAssets {
     #[asset(path = "images/troopers.png")]
     #[asset(image(sampler(filter = nearest)))]
     pub troopers: Handle<Image>,
-    #[asset(texture_atlas_layout(
-        tile_size_x = 48,
-        tile_size_y = 48,
-        columns = 8,
-        rows = 3,
-        padding_x = 0,
-        padding_y = 0,
-        offset_x = 0,
-        offset_y = 0
-    ))]
+    #[asset(texture_atlas_layout(tile_size_x = 48, tile_size_y = 48, columns = 8, rows = 3))]
     pub troopers_layout: Handle<TextureAtlasLayout>,
 
     health_bar_rect: Handle<Mesh>,
     health_bar_color: Handle<ColorMaterial>,
-    pub health_bar_bg_color: Handle<ColorMaterial>,
+    health_bar_bg_color: Handle<ColorMaterial>,
 }
 
 impl GameAssets {

@@ -23,10 +23,9 @@ struct DamageNumberLifetime {
 }
 
 fn show_damage_numbers(
-    mut events: EventReader<DoDamageToEnemy>,
     enemies: Query<&Transform, With<EnemyHealth>>,
+    mut events: EventReader<DoDamageToEnemy>,
     mut rng: ResMut<GlobalRng>,
-
     mut commands: Commands,
 ) {
     for event in events.read() {
@@ -39,7 +38,7 @@ fn show_damage_numbers(
 
         commands.spawn((
             StateScoped(Screen::Gameplay),
-            Text2d::new((event.damage).to_string()),
+            Text2d::new(event.damage.to_string()),
             TextColor(event.damage_type.color()),
             TextFont::from_font_size(18.0).with_font(TITLE_FONT),
             DamageNumber,
@@ -47,7 +46,7 @@ fn show_damage_numbers(
                 timer: Timer::from_seconds(0.6, TimerMode::Once),
                 velocity: Vec3::Y * 0.8, // upward movement
             },
-            Transform::from_translation(translation).with_scale(Vec3::splat(0.1)),
+            Transform::from_translation(translation).with_scale(Vec3::splat(0.15)),
         ));
     }
 }

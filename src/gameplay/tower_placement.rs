@@ -1,7 +1,6 @@
 use crate::gameplay::hotbar::HotbarItem;
 use crate::level::components::{Adjacent, ExactPosition, LEVEL_SCALING};
 use crate::{
-    PausableSystems,
     assets::TowerSprites,
     data::*,
     gameplay::messages::DisplayFlashMessage,
@@ -9,9 +8,11 @@ use crate::{
         components::{Ceiling, Floor, Wall, WallDirection},
         resource::CellDirection,
     },
-    screens::Screen,
+    prelude::*,
 };
 
+use crate::assets::SoundEffects;
+use crate::audio::sound_effect;
 use bevy::prelude::*;
 use bevy_composable::app_impl::{ComplexSpawnable, ComponentTreeable};
 
@@ -24,6 +25,11 @@ pub(super) fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         tower_placement_change.run_if(on_event::<TowerPlacementEvent>),
+    );
+
+    app.add_systems(
+        Update,
+        play_tower_placement_sound.run_if(in_state(Screen::Gameplay)),
     );
 
     app.add_systems(
@@ -377,5 +383,17 @@ fn right_click_tower_options(
     if let Some((entity, _, tower)) = in_range.into_iter().next() {
         player_state.money += tower.price();
         commands.entity(entity).despawn();
+    }
+}
+
+fn play_tower_placement_sound(
+    sfx: Res<SoundEffects>,
+    mut place_events: EventReader<TowerPlacementEvent>,
+    mut commands: Commands,
+) {
+    for event in place_events.read() {
+        if let TowerPlacementEvent::Accepted(_, _, _) = event {
+            commands.spawn(sound_effect(sfx.tower_placed_sfx.clone()));
+        }
     }
 }

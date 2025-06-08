@@ -1,24 +1,7 @@
-use avian2d::prelude::{Collisions, LinearVelocity, OnCollisionStart, Sensor};
-use bevy::{
-    ecs::{
-        entity::Entity,
-        event::{Event, EventReader, EventWriter},
-        hierarchy::Children,
-        observer::Trigger,
-        query::With,
-        system::{Commands, Query},
-    },
-    math::{Vec2, Vec3Swizzles},
-    prelude::warn,
-    reflect::Reflect,
-    transform::components::{GlobalTransform, Transform},
-};
-use bevy_composable::app_impl::ComplexSpawnable;
-use std::cell;
-
 use super::common::{TowerFired, TowerTriggerRange};
+use crate::assets::SoundEffects;
+use crate::audio::sound_effect;
 use crate::{
-    assets::LiquidSprites,
     data::{
         Tower,
         projectiles::{AttackEffect, AttackType, DamageType, Droplet, LiquidType, Puddle},
@@ -34,6 +17,14 @@ use crate::{
     },
     prefabs::attacks::{droplet, puddle},
 };
+use avian2d::prelude::{Collisions, LinearVelocity, OnCollisionStart, Sensor};
+use bevy::{
+    math::{Vec2, Vec3Swizzles},
+    prelude::*,
+    reflect::Reflect,
+    transform::components::{GlobalTransform, Transform},
+};
+use bevy_composable::app_impl::ComplexSpawnable;
 
 #[derive(Event, Reflect, Debug, PartialEq, Clone)]
 pub struct ApplyAttackEffect {
@@ -69,9 +60,9 @@ pub fn do_tower_attacks(
         match tower.attack_def() {
             AttackType::EntireCell(attack_effects) => {
                 contact_events.write(AttackEnemiesInContact {
-                    sensor: *children
+                    sensor: children
                         .iter()
-                        .filter(|w| ranges.get(**w).is_ok())
+                        .filter(|w| ranges.get(*w).is_ok())
                         .next()
                         .unwrap(),
                     effect: attack_effects,
@@ -143,8 +134,10 @@ pub fn attack_contact_enemies(
     mut events: EventReader<AttackEnemiesInContact>,
     mut attack_events: EventWriter<ApplyAttackEffect>,
     collisions: Collisions,
+    sfx: Res<SoundEffects>,
     enemies: Query<(), With<EnemyHealth>>,
     mut towers: Query<(&Tower, &CellDirection, &mut AnimationFrameQueue)>,
+    mut commands: Commands,
 ) {
     for &AttackEnemiesInContact {
         sensor,
@@ -161,6 +154,10 @@ pub fn attack_contact_enemies(
             return;
         };
         animation.set_override(cell_direction.attack_frames(&tower));
+        if let Some(sfx) = sfx.tower_attack(&tower) {
+            commands.spawn(sound_effect(sfx));
+        }
+
         for effect in effect {
             for enemy in &enemies {
                 attack_events.write(ApplyAttackEffect {

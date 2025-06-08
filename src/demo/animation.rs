@@ -5,13 +5,9 @@
 //! - [Timers](https://github.com/bevyengine/bevy/blob/latest/examples/time/timers.rs)
 
 use bevy::prelude::*;
-use rand::prelude::*;
 use std::time::Duration;
 
-use crate::{
-    AppSystems, PausableSystems, assets::GameAssets, audio::sound_effect,
-    demo::movement::MovementController,
-};
+use crate::{AppSystems, PausableSystems, assets::GameAssets, demo::movement::MovementController};
 
 pub(super) fn plugin(app: &mut App) {
     // Animate and play sound effects based on controls.
@@ -20,11 +16,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         (
             update_animation_timer.in_set(AppSystems::TickTimers),
-            (
-                update_animation_movement,
-                update_animation_atlas,
-                trigger_step_sound_effect,
-            )
+            (update_animation_movement, update_animation_atlas)
                 .chain()
                 .run_if(resource_exists::<GameAssets>)
                 .in_set(AppSystems::Update),
@@ -67,25 +59,6 @@ fn update_animation_atlas(mut query: Query<(&PlayerAnimation, &mut Sprite)>) {
         };
         if animation.changed() {
             atlas.index = animation.get_atlas_index();
-        }
-    }
-}
-
-/// If the player is moving, play a step sound effect synchronized with the
-/// animation.
-fn trigger_step_sound_effect(
-    mut commands: Commands,
-    player_assets: Res<GameAssets>,
-    mut step_query: Query<&PlayerAnimation>,
-) {
-    for animation in &mut step_query {
-        if animation.state == PlayerAnimationState::Walking
-            && animation.changed()
-            && (animation.frame == 2 || animation.frame == 5)
-        {
-            let rng = &mut rand::rng();
-            let random_step = player_assets.steps.choose(rng).unwrap().clone();
-            commands.spawn(sound_effect(random_step));
         }
     }
 }

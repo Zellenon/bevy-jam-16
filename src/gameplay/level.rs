@@ -7,6 +7,8 @@ use bevy_composable::{
 };
 use bevy_turborand::GlobalRng;
 
+use crate::assets::SoundEffects;
+use crate::audio::sound_effect;
 use crate::{
     assets::LevelAssets,
     audio::music,
@@ -69,9 +71,10 @@ pub fn spawn_level(
 
 pub fn despawn_enemy_on_goal(
     mut commands: Commands,
+    mut game_state: ResMut<PlayerState>,
     enemies: Query<(Entity, &Transform), With<EnemyHealth>>,
     goal: Query<&Transform, With<EndNode>>,
-    mut game_state: ResMut<PlayerState>,
+    sfx: Res<SoundEffects>,
 ) {
     if let Ok(goal_pos) = goal.single() {
         let goal_pos = goal_pos.translation.xy();
@@ -79,6 +82,7 @@ pub fn despawn_enemy_on_goal(
             if pos.translation.xy().distance(goal_pos) < 7. {
                 commands.get_entity(e).unwrap().despawn();
                 game_state.health -= 1;
+                commands.spawn(sound_effect(sfx.took_damage.clone()));
                 println!("Damage Taken!");
             }
         }
