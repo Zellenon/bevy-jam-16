@@ -23,9 +23,7 @@ pub(super) fn plugin(app: &mut App) {
     );
 
     app.add_systems(Update, add_1k.run_if(input_just_pressed(KeyCode::KeyM)));
-    app.add_systems(Startup, |mut store: ResMut<GizmoConfigStore>| {
-        store.config_mut::<PhysicsGizmos>().0.enabled = false
-    });
+    app.add_systems(Startup, on_startup);
 
     app.add_plugins(EguiPlugin {
         enable_multipass_for_primary_context: true,
@@ -34,6 +32,10 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
+
+fn on_startup(mut store: ResMut<GizmoConfigStore>) {
+    store.config_mut::<PhysicsGizmos>().0.enabled = false
+}
 
 fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>, mut store: ResMut<GizmoConfigStore>) {
     options.toggle();

@@ -221,6 +221,7 @@ pub fn wall(
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
         Name::new("Wall"),
+        Visibility::Inherited,
     )
         .store()
         + pos(x, y)
@@ -228,6 +229,7 @@ pub fn wall(
             Wall(direction),
             Pickable::default(),
             Transform::from_xyz(0.0, 0.0, 0.1).with_rotation(Quat::from_rotation_z(PI / 2.0)),
+            Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
                 custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
@@ -248,6 +250,7 @@ pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
         Name::new("Ceiling"),
+        Visibility::Inherited,
     )
         .store()
         + pos(x, y)
@@ -255,6 +258,7 @@ pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree
             Ceiling,
             Transform::from_xyz(0.0, -0.06, 0.0),
             Pickable::default(),
+            Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
                 custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
@@ -275,6 +279,7 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
         Name::new("Floor"),
+        Visibility::Inherited,
     )
         .store()
         + pos(x, y)
@@ -282,6 +287,7 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
             Floor,
             Transform::from_xyz(0.0, 0.06, 0.0),
             Pickable::default(),
+            Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
                 custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
@@ -295,21 +301,8 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
             .store()
 }
 
-pub fn rect_sprite(x: f32, y: f32, h: f32, w: f32, color: Color) -> ComponentTree {
-    (
-        Sprite {
-            color,
-            custom_size: Some(Vec2::new(w, h)),
-            ..default()
-        },
-        Visibility::Visible,
-    )
-        .store()
-        + pos(x, y)
-}
-
 pub fn node(x: f32, y: f32, direction: CellDirection) -> ComponentTree {
-    (PathNode(direction)).store() + pos(x, y)
+    PathNode(direction).store() + pos(x, y)
 }
 
 pub fn pos(x: f32, y: f32) -> ComponentTree {
