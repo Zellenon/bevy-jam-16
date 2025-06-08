@@ -13,12 +13,15 @@ pub struct SoundEffects {
 
     #[asset(path = "audio/towers/tesla.ogg")]
     tesla_attack: Handle<AudioSource>,
+    #[asset(path = "audio/towers/spike_pit.ogg")]
+    spike_pit: Handle<AudioSource>,
 }
 
 impl SoundEffects {
     pub fn tower_attack(&self, tower: &Tower) -> Option<Handle<AudioSource>> {
         match tower {
             Tower::Tesla => Some(self.tesla_attack.clone()),
+            Tower::SpikePit => Some(self.spike_pit.clone()),
             _ => None,
         }
     }
