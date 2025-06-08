@@ -4,14 +4,14 @@ use super::{
 };
 use crate::demo::enemy_health::Bounty;
 use crate::{
-    assets::{GameAssets, game_assets},
+    assets::GameAssets,
     data::stats::{DamageMultiplier, MoveSpeed, Stat},
     demo::{
         enemy_health::{EnemyHealth, EnemyHealthBar},
         enemy_movement::MovementDirection,
     },
     gameplay::animation::AnimationFrameQueue,
-    screens::Screen,
+    prelude::*,
 };
 use avian2d::prelude::{
     Collider, CollisionLayers, GravityScale, LinearDamping, LockedAxes, Mass, RigidBody,
@@ -27,15 +27,15 @@ pub fn basic_trooper() -> ComponentTree {
     let animation = AnimationFrameQueue::new(&[8, 9, 10, 11, 12, 13, 14]);
     name("Minor Trooper") + enemy_requirements(Vec2::new(3., 4.), 35., 10)
         << ((
-            Transform::from_scale(Vec3::splat(0.11)),
+            // Transform::from_scale(Vec3::splat(0.11)),
             Pickable::default(),
             EnemySprite,
         )
             .store()
             + animation.store()
-            + image(GameAssets::troopers)
+            + image(GameAssets::troopers, 6.0)
             + layout(GameAssets::troopers_layout)
-            << health_bar(24.))
+            << health_bar(3.))
 }
 
 pub fn chonkus_trooper() -> ComponentTree {
@@ -44,30 +44,30 @@ pub fn chonkus_trooper() -> ComponentTree {
         + enemy_requirements(Vec2::new(4., 5.0), 25., 20)
         + (Stat::<DamageMultiplier>::new(0.8)).store()
         << ((
-            Transform::from_scale(Vec3::splat(0.16)),
+            // Transform::from_scale(Vec3::splat(0.16)),
             Pickable::default(),
             EnemySprite,
         )
             .store()
             + animation.store()
-            + image(GameAssets::troopers)
+            + image(GameAssets::troopers, 8.0)
             + layout(GameAssets::troopers_layout)
-            << health_bar(24.))
+            << health_bar(4.))
 }
 
 pub fn turbo_trooper() -> ComponentTree {
     let animation = AnimationFrameQueue::new(&[0, 1, 2, 3, 4, 5, 6, 7]);
     name("Turbo Trooper") + enemy_requirements(Vec2::new(2., 3.), 45., 15)
         << ((
-            Transform::from_scale(Vec3::splat(0.10)),
+            // Transform::from_scale(Vec3::splat(0.10)),
             Pickable::default(),
             EnemySprite,
         )
             .store()
             + animation.store()
-            + image(GameAssets::troopers)
+            + image(GameAssets::troopers, 5.0)
             + layout(GameAssets::troopers_layout)
-            << health_bar(24.))
+            << health_bar(2.5))
 }
 
 pub fn enemy_requirements(size: Vec2, speed: f32, bounty: i32) -> ComponentTree {
@@ -92,13 +92,16 @@ pub fn enemy_requirements(size: Vec2, speed: f32, bounty: i32) -> ComponentTree 
 }
 
 pub fn health_bar(y_offset: f32) -> ComponentTree {
-    (
-        EnemyHealthBar,
-        Transform::from_translation(Vec3::new(0., y_offset, 0.)),
-    )
-        .store()
-        + mesh(GameAssets::health_bar_mesh)
-        + color(GameAssets::health_color)
+    mesh(GameAssets::health_bar_mesh)
+        + color(GameAssets::health_bg_color)
+        + Transform::from_translation(Vec3::new(0., y_offset, 0.)).store()
+        << (
+            EnemyHealthBar,
+            Transform::from_translation(Vec3::new(0., 0., 1.)),
+        )
+            .store()
+            + mesh(GameAssets::health_bar_mesh)
+            + color(GameAssets::health_color)
 }
 
 // There's a strange glitch where sprites are the incorrect size when first spawned, so if we hide

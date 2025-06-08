@@ -1,7 +1,7 @@
-use bevy::{color::palettes::css::GREEN, prelude::*};
+use bevy::{color::palettes::css, prelude::*};
 use bevy_asset_loader::prelude::*;
 
-pub const HEALTH_BAR_WIDTH: f32 = 32.0;
+pub const HEALTH_BAR_WIDTH: f32 = 4.0;
 
 #[derive(AssetCollection, Resource)]
 pub struct GameAssets {
@@ -52,8 +52,10 @@ pub struct GameAssets {
         offset_y = 0
     ))]
     pub troopers_layout: Handle<TextureAtlasLayout>,
+
     health_bar_rect: Handle<Mesh>,
     health_bar_color: Handle<ColorMaterial>,
+    pub health_bar_bg_color: Handle<ColorMaterial>,
 }
 
 impl GameAssets {
@@ -84,14 +86,17 @@ impl GameAssets {
     pub fn health_color(&self) -> Handle<ColorMaterial> {
         self.health_bar_color.clone()
     }
+    pub fn health_bg_color(&self) -> Handle<ColorMaterial> {
+        self.health_bar_bg_color.clone()
+    }
 
     pub fn meshes_and_materials(
         mut resources: ResMut<Self>,
         mut meshes: ResMut<Assets<Mesh>>,
         mut materials: ResMut<Assets<ColorMaterial>>,
     ) {
-        resources.health_bar_rect = meshes.add(Rectangle::new(HEALTH_BAR_WIDTH, 3.));
-
-        resources.health_bar_color = materials.add(Color::from(GREEN));
+        resources.health_bar_rect = meshes.add(Rectangle::new(HEALTH_BAR_WIDTH, 0.5));
+        resources.health_bar_color = materials.add(Color::from(css::GREEN));
+        resources.health_bar_bg_color = materials.add(Color::from(css::BLACK));
     }
 }

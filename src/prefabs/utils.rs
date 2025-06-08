@@ -1,3 +1,11 @@
+use super::{enemies::ShowDelay, wizardry::GimmieFn};
+use crate::level::components::LEVEL_SCALING;
+use crate::{
+    assets::{GameAssets, LiquidSprites, TowerSprites},
+    data::{Tower, projectiles::LiquidType},
+    level::resource::CellDirection,
+};
+use bevy::math::Vec2;
 use bevy::{
     app::{Plugin, Update},
     asset::{Asset, Assets, Handle},
@@ -16,15 +24,8 @@ use bevy::{
 use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree};
 use std::sync::Arc;
 
-use super::{enemies::ShowDelay, wizardry::GimmieFn};
-use crate::{
-    assets::{GameAssets, LiquidSprites, TowerSprites},
-    data::{Tower, projectiles::LiquidType},
-    level::resource::CellDirection,
-};
-
 #[derive(Component, Clone)]
-pub struct GiveMeImage(pub Arc<dyn GimmieFn<Image, GameAssets>>);
+pub struct GiveMeImage(pub Arc<dyn GimmieFn<Image, GameAssets>>, pub Option<f32>);
 
 #[derive(Component, Clone)]
 pub struct GiveMeLayout(pub Arc<dyn GimmieFn<TextureAtlasLayout, GameAssets>>);
@@ -44,8 +45,8 @@ pub struct DropletSprite(pub LiquidType);
 #[derive(Component, Clone, Debug, Reflect)]
 pub struct PuddleSprite(pub LiquidType);
 
-pub fn image(image: impl GimmieFn<Image, GameAssets>) -> ComponentTree {
-    GiveMeImage(Arc::new(image)).store()
+pub fn image(image: impl GimmieFn<Image, GameAssets>, scale: f32) -> ComponentTree {
+    GiveMeImage(Arc::new(image), Some(scale)).store()
 }
 
 pub fn layout(layout: impl GimmieFn<TextureAtlasLayout, GameAssets>) -> ComponentTree {
@@ -87,11 +88,13 @@ pub fn give_images(
     mut commands: Commands,
 ) {
     let entity = trigger.target();
+    let request = requests.get(entity).unwrap();
     commands
         .get_entity(entity)
         .unwrap()
         .insert(Sprite {
-            image: requests.get(entity).unwrap().0(&images),
+            custom_size: request.1.map(|s| Vec2::splat(s)),
+            image: request.0(&images),
             ..Default::default()
         })
         .remove::<GiveMeImage>();

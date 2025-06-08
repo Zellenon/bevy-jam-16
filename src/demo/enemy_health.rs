@@ -1,7 +1,3 @@
-use avian2d::prelude::{OnCollisionEnd, OnCollisionStart};
-use bevy::prelude::*;
-use bevy_turborand::{DelegatedRng, GlobalRng};
-
 use crate::{
     AppSystems, PausableSystems,
     assets::{StatusSprites, game_assets::HEALTH_BAR_WIDTH},
@@ -11,6 +7,11 @@ use crate::{
     demo::enemy_movement::MovementDirection,
     gameplay::shared_systems::Lifetime,
 };
+use avian2d::prelude::{Collider, CollisionLayers, OnCollisionEnd, OnCollisionStart};
+use bevy::ecs::relationship::DescendantIter;
+use bevy::prelude::*;
+use bevy_turborand::{DelegatedRng, GlobalRng};
+use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(
@@ -44,7 +45,7 @@ pub struct Bounty(pub i32);
 #[derive(Component, Default, Clone, Copy, PartialEq, Reflect)]
 pub struct EnemyChild;
 
-#[derive(Component, Default, Clone, Copy, PartialEq, Reflect)]
+#[derive(Component, Clone, Copy, PartialEq, Reflect)]
 pub struct EnemyHealthBar;
 
 #[derive(Event, Debug)]
@@ -83,13 +84,15 @@ pub fn kill_at_0_health(
 }
 
 pub fn do_kill_enemies(
-    mut events: EventReader<KillEnemy>,
     bounty: Query<&Bounty>,
+    mut events: EventReader<KillEnemy>,
     mut commands: Commands,
     mut player_state: ResMut<PlayerState>,
 ) {
     for event in events.read() {
-        commands.entity(event.0).insert(Lifetime::new(0.1));
+        commands.entity(event.0).insert(Lifetime::new(0.15));
+        commands.entity(event.0).remove::<Collider>();
+        commands.entity(event.0).remove::<CollisionLayers>();
         if let Ok(bounty) = bounty.get(event.0) {
             player_state.money += bounty.0;
         }
@@ -97,23 +100,23 @@ pub fn do_kill_enemies(
 }
 
 pub fn update_health_bars(
-    mut bars: Query<(Entity, &mut Transform), With<EnemyHealthBar>>,
+    mut events: EventReader<DoDamageToEnemy>,
+    mut health_bars: Query<&mut Transform, With<EnemyHealthBar>>,
+    children_query: Query<&Children>,
     enemies: Query<&EnemyHealth>,
-    parents: Query<&ChildOf>,
 ) {
-    for (health_bar_entity, mut transform) in bars.iter_mut() {
-        let Ok(health_bar_parent) = parents.get(health_bar_entity) else {
+    for event in events.read() {
+        let Some(health_bar_entity) = DescendantIter::new(&children_query, event.enemy)
+            .find(|&entity| health_bars.contains(entity))
+        else {
+            println!("unable to find health bar for enemy {:?}", event.enemy);
             continue;
         };
-        let Ok(enemy_entity) = parents.get(health_bar_parent.0) else {
-            continue;
-        };
-        let Ok(enemy) = enemies.get(enemy_entity.0) else {
-            continue;
-        };
+        let enemy = enemies.get(event.enemy).unwrap();
+        let mut health_bar_transform = health_bars.get_mut(health_bar_entity).unwrap();
 
-        transform.scale.x = (enemy.current as f32) / (enemy.current as f32);
-        transform.translation.x =
+        health_bar_transform.scale.x = (enemy.current as f32) / (enemy.max as f32);
+        health_bar_transform.translation.x =
             -(HEALTH_BAR_WIDTH * ((enemy.max - enemy.current) as f32 / (enemy.max as f32))) / 2.0;
     }
 }
