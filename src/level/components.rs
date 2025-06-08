@@ -2,6 +2,7 @@ use avian2d::prelude::{Collider, CollisionLayers, RigidBody};
 use bevy::ecs::system::{Res, ResMut};
 use bevy::image::TextureAtlas;
 use bevy::picking::Pickable;
+use bevy::prelude::Name;
 use bevy::{
     color::Color, ecs::component::Component, math::Vec2, prelude::info, reflect::Reflect,
     render::view::Visibility, sprite::Sprite, transform::components::Transform, utils::default,
@@ -227,31 +228,29 @@ pub fn wall(x: f32, y: f32, direction: WallDirection) -> ComponentTree {
 
 pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
     (
-        // Ceiling,
         Architecture,
         Collider::rectangle(LEVEL_SCALING, WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING),
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
-        Pickable::default(),
+        Name::new("Ceiling"),
     )
         .store()
-        + name("Ceiling")
         + pos(x, y)
-    << (
-        Ceiling,
-        Transform::from_xyz(0.0, -0.06, 0.0),
-        Pickable::default(),
-        Sprite {
-            image: level_assets.level.clone(),
-            custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
-            texture_atlas: Some(TextureAtlas {
-                layout: level_assets.level_layout.clone(),
-                index: 1,
-            }),
-            ..default()
-        },
-    )
-        .store()
+        << (
+            Ceiling,
+            Transform::from_xyz(0.0, -0.06, 0.0),
+            Pickable::default(),
+            Sprite {
+                image: level_assets.level.clone(),
+                custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
+                texture_atlas: Some(TextureAtlas {
+                    layout: level_assets.level_layout.clone(),
+                    index: 1,
+                }),
+                ..default()
+            },
+        )
+            .store()
 }
 
 pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
@@ -260,10 +259,9 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
         Collider::rectangle(LEVEL_SCALING, WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING),
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
         RigidBody::Static,
-        Pickable::default(),
+        Name::new("Floor"),
     )
         .store()
-        + name("Floor")
         + pos(x, y)
         << (
             Floor,
