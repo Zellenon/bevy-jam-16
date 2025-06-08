@@ -160,11 +160,13 @@ impl LevelParent {
                 if level_data.floors[x][y] {
                     level = level
                         << ceiling(
+                            level_assets,
                             x as f32 * LEVEL_SCALING,
                             ((y as f32) - 0.5 - FLOOR_TOTAL_HEIGHT / 4.) * LEVEL_SCALING,
                         ) + Adjacent::new(x, y, GeneralPosition::UpDown, ExactPosition::Ceiling)
                             .store()
                         << floor(
+                            level_assets,
                             x as f32 * LEVEL_SCALING,
                             ((y as f32) - 0.5 + FLOOR_TOTAL_HEIGHT / 4.) * LEVEL_SCALING,
                         ) + Adjacent::new(x, y, GeneralPosition::UpDown, ExactPosition::Floor)
@@ -223,9 +225,9 @@ pub fn wall(x: f32, y: f32, direction: WallDirection) -> ComponentTree {
         )
 }
 
-pub fn ceiling(x: f32, y: f32) -> ComponentTree {
+pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
     (
-        Ceiling,
+        // Ceiling,
         Architecture,
         Collider::rectangle(LEVEL_SCALING, WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING),
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
@@ -234,18 +236,26 @@ pub fn ceiling(x: f32, y: f32) -> ComponentTree {
     )
         .store()
         + name("Ceiling")
-        + rect_sprite(
-            x,
-            y,
-            FLOOR_TOTAL_HEIGHT / 2. * LEVEL_SCALING,
-            LEVEL_SCALING,
-            Color::srgba(0.0, 0.2, 0.8, 1.0),
-        )
+        + pos(x, y)
+    << (
+        Ceiling,
+        Transform::from_xyz(0.0, -0.06, 0.0),
+        Pickable::default(),
+        Sprite {
+            image: level_assets.level.clone(),
+            custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
+            texture_atlas: Some(TextureAtlas {
+                layout: level_assets.level_layout.clone(),
+                index: 1,
+            }),
+            ..default()
+        },
+    )
+        .store()
 }
 
-pub fn floor(x: f32, y: f32) -> ComponentTree {
+pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
     (
-        Floor,
         Architecture,
         Collider::rectangle(LEVEL_SCALING, WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING),
         CollisionLayers::new(GPL::Level, [GPL::Enemy, GPL::Default, GPL::Projectiles]),
@@ -254,13 +264,22 @@ pub fn floor(x: f32, y: f32) -> ComponentTree {
     )
         .store()
         + name("Floor")
-        + rect_sprite(
-            x,
-            y,
-            FLOOR_TOTAL_HEIGHT / 2. * LEVEL_SCALING,
-            LEVEL_SCALING,
-            Color::srgba(0.4, 0.4, 0.0, 1.0),
+        + pos(x, y)
+        << (
+            Floor,
+            Transform::from_xyz(0.0, 0.06, 0.0),
+            Pickable::default(),
+            Sprite {
+                image: level_assets.level.clone(),
+                custom_size: Some(Vec2::new(LEVEL_SCALING, LEVEL_SCALING / 16.)),
+                texture_atlas: Some(TextureAtlas {
+                    layout: level_assets.level_layout.clone(),
+                    index: 0,
+                }),
+                ..default()
+            },
         )
+            .store()
 }
 
 pub fn rect_sprite(x: f32, y: f32, h: f32, w: f32, color: Color) -> ComponentTree {

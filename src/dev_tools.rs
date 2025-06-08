@@ -1,5 +1,7 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
+use avian2d::debug_render::PhysicsGizmos;
+use avian2d::prelude::PhysicsDebugPlugin;
 use bevy::{
     dev_tools::states::log_transitions, input::common_conditions::input_just_pressed, prelude::*,
     ui::UiDebugOptions,
@@ -21,6 +23,9 @@ pub(super) fn plugin(app: &mut App) {
     );
 
     app.add_systems(Update, add_1k.run_if(input_just_pressed(KeyCode::KeyM)));
+    app.add_systems(Startup, |mut store: ResMut<GizmoConfigStore>| {
+        store.config_mut::<PhysicsGizmos>().0.enabled = false
+    });
 
     app.add_plugins(EguiPlugin {
         enable_multipass_for_primary_context: true,
@@ -30,8 +35,10 @@ pub(super) fn plugin(app: &mut App) {
 
 const TOGGLE_KEY: KeyCode = KeyCode::Backquote;
 
-fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>) {
+fn toggle_debug_ui(mut options: ResMut<UiDebugOptions>, mut store: ResMut<GizmoConfigStore>) {
     options.toggle();
+    let config = store.config_mut::<PhysicsGizmos>().0;
+    config.enabled = options.enabled;
 }
 
 fn add_1k(mut player_state: ResMut<PlayerState>) {
