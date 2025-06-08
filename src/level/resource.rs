@@ -65,12 +65,12 @@ impl CellDirection {
             _ => match self {
                 CellDirection::Up => Transform::from_xyz(0., -5., 0.),
                 CellDirection::Down => Transform::from_xyz(0., 5., 0.),
-                CellDirection::Left => {
-                    Transform::from_xyz(0., 5., 0.).with_rotation(Quat::from_rotation_z(PI / 2.0))
+                CellDirection::Left => Transform::from_xyz(0., 5., 0.)
+                    .with_rotation(Quat::from_rotation_z(-PI / 2.0))
+                    .with_scale(Vec3::new(-1., 1., 1.)),
+                CellDirection::Right => {
+                    Transform::from_xyz(0., -5., 0.).with_rotation(Quat::from_rotation_z(-PI / 2.0))
                 }
-                CellDirection::Right => Transform::from_xyz(0., -5., 0.)
-                    .with_scale(Vec3::new(-1., 1., 1.))
-                    .with_rotation(Quat::from_rotation_z(PI / 2.0)),
             },
         }
     }
