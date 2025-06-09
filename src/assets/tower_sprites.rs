@@ -9,7 +9,7 @@ use bevy_asset_loader::prelude::*;
 pub struct TowerSprites {
     #[asset(path = "images/towers/piston.png")]
     piston_sprite: Handle<Image>,
-    #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 6, rows = 1))]
+    #[asset(texture_atlas_layout(tile_size_x = 128, tile_size_y = 128, columns = 5, rows = 3))]
     piston_layout: Handle<TextureAtlasLayout>,
 
     #[asset(path = "images/towers/fan2.png")]
@@ -88,6 +88,7 @@ impl TowerSprites {
 
         if [
             Tower::Tesla,
+            Tower::Piston,
             Tower::Water,
             Tower::Flame,
             Tower::Acid,
@@ -118,7 +119,12 @@ impl TowerSprites {
 impl CellDirection {
     pub fn idle_frames(&self, tower: &Tower) -> &'static [usize] {
         match tower {
-            Tower::Piston => &[0, 1, 2, 3, 4, 5, 5, 5],
+            Tower::Piston => match self {
+                CellDirection::Down => &[4],
+                CellDirection::Up => &[9],
+                CellDirection::Left => &[14],
+                CellDirection::Right => &[14],
+            },
             Tower::Fan => match self {
                 CellDirection::Down => &[0],
                 CellDirection::Up => &[4],
@@ -234,11 +240,10 @@ impl CellDirection {
                 CellDirection::Right => &[2],
             },
             Tower::Piston => match self {
-                // TODO: Get actual sprites
-                CellDirection::Down => &[0],
-                CellDirection::Up => &[1],
-                CellDirection::Left => &[2],
-                CellDirection::Right => &[2],
+                CellDirection::Down => &[0, 1, 2, 3],
+                CellDirection::Up => &[5, 6, 7, 8],
+                CellDirection::Left => &[10, 11, 12, 13],
+                CellDirection::Right => &[10, 11, 12, 13],
             },
             _ => todo!(),
         }

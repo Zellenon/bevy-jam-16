@@ -52,18 +52,18 @@ impl AnimationFrameQueue {
         let active_frames = self.frame_override.unwrap_or(self.frames);
 
         if self.timer.just_finished() {
+            // Set sprite BEFORE advancing index
+            sprite.index = active_frames[self.current_index];
             self.current_index += 1;
 
             if self.current_index >= active_frames.len() {
                 if self.frame_override.is_some() {
-                    // One-shot override finished, revert to base animation
                     self.frame_override = None;
                     self.current_index = 0;
                 } else {
                     self.current_index = 0;
                 }
             }
-            sprite.index = active_frames[self.current_index];
         }
     }
 }
