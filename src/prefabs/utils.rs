@@ -1,8 +1,7 @@
 use super::{enemies::ShowDelay, wizardry::GimmieFn};
-use crate::level::components::LEVEL_SCALING;
 use crate::{
     assets::{GameAssets, LiquidSprites, TowerSprites},
-    data::{Tower, projectiles::LiquidType},
+    data::{projectiles::LiquidType, Tower},
     level::resource::CellDirection,
 };
 use bevy::math::Vec2;

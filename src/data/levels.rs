@@ -1,9 +1,9 @@
+use crate::gameplay::wave_manager::Wave;
+use crate::prefabs::enemies::{basic_trooper, chonkus_trooper, turbo_trooper};
 use bevy::prelude::*;
 use std::collections::VecDeque;
 
-use crate::gameplay::wave_manager::Wave;
-use crate::prefabs::enemies::{basic_trooper, chonkus_trooper, turbo_trooper};
-
+#[allow(unused)]
 pub const MAP_TEXT: &'static str = ">>>
 ";
 

@@ -1,14 +1,12 @@
+use super::physics::GamePhysicsLayer as GPL;
+use super::utils::{DropletSprite, PuddleSprite};
+use crate::data::projectiles::{Droplet, LiquidType, Puddle};
+use crate::gameplay::shared_systems::Lifetime;
 use avian2d::prelude::{
     Collider, CollisionEventsEnabled, CollisionLayers, LinearVelocity, Mass, RigidBody, Sensor,
 };
-use bevy::{ecs::system::Res, math::Vec2, render::view::Visibility};
+use bevy::prelude::*;
 use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree, wrappers::name};
-
-use super::physics::GamePhysicsLayer as GPL;
-use super::utils::{DropletSprite, PuddleSprite};
-use crate::assets::LiquidSprites;
-use crate::data::projectiles::{Droplet, LiquidType, Puddle};
-use crate::gameplay::shared_systems::Lifetime;
 
 pub fn droplet(liquid: LiquidType) -> ComponentTree {
     (

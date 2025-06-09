@@ -1,21 +1,3 @@
-use std::cell;
-
-use avian2d::prelude::{LinearVelocity, OnCollisionStart, Sensor};
-use bevy::{
-    ecs::{
-        entity::Entity,
-        event::{EventReader, EventWriter},
-        observer::Trigger,
-        query::With,
-        system::{Commands, Query, Res},
-    },
-    math::{Vec2, Vec3Swizzles},
-    prelude::warn,
-    time::Time,
-    transform::components::{GlobalTransform, Transform},
-};
-use bevy_composable::app_impl::ComplexSpawnable;
-
 use super::attacks::{ApplyAttackData, DropLiquid};
 use crate::{
     data::{
@@ -30,6 +12,9 @@ use crate::{
     },
     prefabs::attacks::{droplet, puddle},
 };
+use avian2d::prelude::{LinearVelocity, OnCollisionStart, Sensor};
+use bevy::prelude::*;
+use bevy_composable::app_impl::ComplexSpawnable;
 
 pub fn drop_liquids(
     mut events: EventReader<DropLiquid>,

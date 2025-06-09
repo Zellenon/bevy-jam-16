@@ -1,6 +1,6 @@
 //! The main menu (seen on the title screen).
 
-use crate::{menus::Menu, screens::Screen, theme::widget};
+use crate::{menus::Menu, theme::widget};
 use bevy::color::palettes::tailwind;
 use bevy::prelude::*;
 

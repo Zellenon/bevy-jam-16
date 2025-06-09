@@ -1,21 +1,7 @@
-use avian2d::prelude::{
-    Collider, CollisionLayers, LayerMask, RayCaster, RayHits, ScalableCollider,
-};
-use bevy::{
-    ecs::{
-        component::Component,
-        entity::{Entity, EntityHashSet},
-        query::With,
-        system::{Commands, Query},
-    },
-    math::{Dir2, Vec2, Vec3, Vec3Swizzles, bounding::RayCast2d},
-    reflect::Reflect,
-    transform::components::{GlobalTransform, Transform},
-};
-
-use crate::prefabs::physics::GamePhysicsLayer;
-
 use super::common::TowerTriggerNeedsGravity;
+use crate::prefabs::physics::GamePhysicsLayer;
+use avian2d::prelude::{Collider, LayerMask, RayCaster, RayHits, ScalableCollider};
+use bevy::{ecs::entity::EntityHashSet, prelude::*};
 
 #[derive(Clone, Copy, Debug, Reflect, Component, PartialEq, Eq)]
 pub struct RangeDropper(pub Entity);

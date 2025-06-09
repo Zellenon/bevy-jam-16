@@ -1,31 +1,27 @@
-use avian2d::prelude::{Collider, Sleeping};
-use bevy::prelude::*;
-use bevy::{color::palettes::tailwind, input::common_conditions::input_just_pressed};
-use bevy_composable::{
-    app_impl::{ComplexSpawnable, ComponentTreeable},
-    wrappers::name,
-};
-use bevy_turborand::GlobalRng;
-
 use crate::assets::SoundEffects;
 use crate::audio::sound_effect;
 use crate::data::levels::LevelData;
-use crate::gameplay::level;
 use crate::gameplay::wave_manager::WaveManager;
 use crate::level::resource::{CurrentLoadedLevel, GotoNextLevel, LevelSelect, UnlockedLevels};
 use crate::{
     assets::LevelAssets,
-    audio::music,
     data::PlayerState,
     demo::enemy_health::EnemyHealth,
     level::{
-        components::{EndNode, LEVEL_SCALING, LevelParent},
+        components::{EndNode, LevelParent},
         resource::Level,
     },
     menus::Menu,
     prelude::*,
     screens::Screen,
 };
+use avian2d::prelude::{Collider, Sleeping};
+use bevy::prelude::*;
+use bevy_composable::{
+    app_impl::{ComplexSpawnable, ComponentTreeable},
+    wrappers::name,
+};
+use bevy_turborand::GlobalRng;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

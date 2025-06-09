@@ -1,19 +1,7 @@
-use bevy::{
-    app::{App, Update},
-    color::Color,
-    ecs::{
-        query::With,
-        system::{Query, command::insert_resource},
-    },
-    gizmos::gizmos::Gizmos,
-    math::{Vec2, Vec3Swizzles},
-    platform::collections::HashMap,
-    transform::components::Transform,
-};
+use crate::level::resource::*;
+use bevy::prelude::*;
 use components::{Architecture, Ceiling, Floor, LevelParent, PathNode, Wall, WallDirection};
 use resource::Level;
-
-use crate::level::resource::*;
 
 pub mod components;
 pub mod resource;
