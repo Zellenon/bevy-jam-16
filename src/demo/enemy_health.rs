@@ -27,6 +27,7 @@ pub(super) fn plugin(app: &mut App) {
     );
     app.add_event::<KillEnemy>()
         .add_event::<DoDamageToEnemy>()
+        .add_event::<BountyEarned>()
         .add_event::<TryDamageToEnemy>();
     app.add_observer(start_collision_damage_event);
     app.add_observer(stop_collision_damage_event);
@@ -41,6 +42,10 @@ pub struct EnemyHealth {
 #[derive(Component, Default, Clone, Copy, PartialEq, Reflect)]
 /// Gives money when the entity is killed
 pub struct Bounty(pub i32);
+
+#[derive(Event, Clone, Copy, PartialEq, Reflect)]
+/// Gives money when the entity is killed
+pub struct BountyEarned(pub Entity, pub i32);
 
 #[derive(Component, Default, Clone, Copy, PartialEq, Reflect)]
 pub struct EnemyChild;
@@ -94,6 +99,7 @@ pub fn do_kill_enemies(
         commands.entity(event.0).remove::<Collider>();
         commands.entity(event.0).remove::<CollisionLayers>();
         if let Ok(bounty) = bounty.get(event.0) {
+            commands.trigger(BountyEarned(event.0, bounty.0));
             player_state.money += bounty.0;
         }
     }

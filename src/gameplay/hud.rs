@@ -1,4 +1,6 @@
 use crate::data::PlayerState;
+use crate::demo::enemy_health::BountyEarned;
+use crate::gameplay::shared_systems::Lifetime;
 use crate::gameplay::wave_manager::WaveManager;
 use crate::prelude::*;
 use crate::theme::widget;
@@ -15,6 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         update_wave_tracker.run_if(resource_changed::<WaveManager>),
     );
+    app.add_observer(bounty_earned);
 }
 
 #[derive(Component)]
@@ -84,4 +87,28 @@ fn update_wave_tracker(
             _ => {}
         }
     }
+}
+
+fn bounty_earned(
+    trigger: Trigger<BountyEarned>,
+    mut hud_elements: Query<(Entity, &HudElement)>,
+    mut commands: Commands,
+) {
+    let earned = trigger.1;
+    for (entity, element) in hud_elements.iter_mut() {
+        match element {
+            HudElement::Money => {
+                commands.entity(entity).with_child((
+                    Lifetime::new(2.0),
+                    Node {
+                        position_type: PositionType::Absolute,
+                        ..default()
+                    },
+                    widget::ui_font(format!("Bounty {earned}")),
+                ));
+            }
+            _ => {}
+        }
+    }
+    println!("Bounty earned: {:?}", trigger.event().0);
 }
