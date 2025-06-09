@@ -3,16 +3,12 @@
 use crate::assets::UiAssets;
 use crate::data::levels::LevelData;
 use crate::level::resource::{CurrentLoadedLevel, LevelSelect};
-use crate::{AppSystems, screens::Screen, theme::prelude::*};
+use crate::{screens::Screen, theme::prelude::*, AppSystems};
 use bevy::{input::common_conditions::input_just_pressed, prelude::*};
-
-#[derive(Resource)]
-struct DisplayedControls(bool);
 
 pub(super) fn plugin(app: &mut App) {
     // Spawn splash screen.
     app.insert_resource(ClearColor(SPLASH_BACKGROUND_COLOR));
-    app.insert_resource(DisplayedControls(false));
 
     // Add splash timer.
     app.register_type::<ScreenTimer>();
@@ -32,13 +28,13 @@ pub(super) fn plugin(app: &mut App) {
     // Exit the splash screen early if the player hits escape.
     app.add_systems(
         Update,
-        enter_title_screen
+        skip_screen
             .run_if(input_just_pressed(KeyCode::Escape).and(in_state(Screen::LevelTransition))),
     );
 
     app.add_systems(
         Update,
-        enter_title_screen
+        skip_screen
             .run_if(input_just_pressed(MouseButton::Left).and(in_state(Screen::LevelTransition))),
     );
     // // Animate splash screen.
@@ -61,12 +57,10 @@ fn spawn_screen(
     assets: Res<UiAssets>,
     mut current_loaded_level: ResMut<CurrentLoadedLevel>,
     level_select: Res<LevelSelect>,
-    mut displayed_controls: ResMut<DisplayedControls>,
 ) {
     current_loaded_level.0 = level_select.0;
 
-    if level_select.0 == 0 && !displayed_controls.0 {
-        displayed_controls.0 = true;
+    if level_select.0 == 0 {
         commands.spawn((
             widget::ui_root("Controls"),
             GlobalZIndex(2),
@@ -169,9 +163,8 @@ fn tick_screen_timer(
     time: Res<Time>,
     mut timer: ResMut<ScreenTimer>,
     level_select: Res<LevelSelect>,
-    displayed_controls: Res<DisplayedControls>,
 ) {
-    if level_select.0 == 0 && !displayed_controls.0 {
+    if level_select.0 == 0 {
         return;
     }
     timer.0.tick(time.delta());
@@ -194,7 +187,7 @@ fn check_splash_timer(
 }
 
 // Early Exit from screen
-fn enter_title_screen(
+fn skip_screen(
     mut next_screen: ResMut<NextState<Screen>>,
     level_select: Res<LevelSelect>,
     level_data: Res<LevelData>,

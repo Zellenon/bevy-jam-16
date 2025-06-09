@@ -1,11 +1,9 @@
-use bevy::{color::palettes::css::*, prelude::*};
-use std::marker::ConstParamTy_;
-use std::marker::UnsizedConstParamTy;
-use std::{fmt::Display, sync::Arc};
-
 use super::status_effects::*;
 use crate::level::resource::CellDirection;
 use bevy::{color::palettes::css, prelude::*};
+use std::fmt::Display;
+use std::marker::ConstParamTy_;
+use std::marker::UnsizedConstParamTy;
 
 #[derive(Clone, Debug, Reflect, PartialEq)]
 pub enum TowerAttackType {

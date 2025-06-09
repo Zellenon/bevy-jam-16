@@ -1,11 +1,7 @@
 use crate::define_stat;
-use bevy::{
-    app::App,
-    ecs::{component::Component, schedule::SystemSet},
-    reflect::{GetTypeRegistration, Reflect, TypePath},
-};
+use bevy::prelude::*;
 use std::marker::PhantomData;
-
+use bevy::reflect::GetTypeRegistration;
 use super::projectiles::DamageType;
 
 pub trait StatTrait:
