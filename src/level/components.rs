@@ -1,5 +1,5 @@
 use super::resource::{CellDirection, Level};
-use crate::assets::{LevelAssets, game_assets};
+use crate::assets::LevelAssets;
 use crate::gameplay::animation::AnimationFrameQueue;
 use crate::prefabs::physics::GamePhysicsLayer as GPL;
 use avian2d::prelude::{Collider, CollisionLayers, Friction, RigidBody};
@@ -9,6 +9,7 @@ use bevy_turborand::{DelegatedRng, GlobalRng};
 use std::f32::consts::PI;
 
 pub const WALL_TOTAL_WIDTH: f32 = 0.10;
+pub const WALL_PICKABLE_WIDTH: f32 = 0.20;
 pub const FLOOR_TOTAL_HEIGHT: f32 = 0.10;
 pub const LEVEL_SCALING: f32 = 10.;
 
@@ -226,7 +227,6 @@ pub fn wall(
     direction: WallDirection,
 ) -> ComponentTree {
     (
-        Wall(direction),
         Architecture,
         Pickable::default(),
         Collider::rectangle(WALL_TOTAL_WIDTH / 2. * LEVEL_SCALING, LEVEL_SCALING),
@@ -235,13 +235,14 @@ pub fn wall(
         Friction::new(0.3),
         Name::new("Wall"),
         Visibility::Inherited,
+        Wall(direction),
     )
         .store()
+        + pickable_rect(LEVEL_SCALING, WALL_PICKABLE_WIDTH * LEVEL_SCALING)
         + pos(x, y)
         << (
-            Wall(direction),
-            Pickable::default(),
             Transform::from_xyz(0.0, 0.0, 0.1).with_rotation(Quat::from_rotation_z(PI / 2.0)),
+            Pickable::IGNORE,
             Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
@@ -265,13 +266,14 @@ pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree
         Friction::new(0.),
         Name::new("Ceiling"),
         Visibility::Inherited,
+        Ceiling,
     )
         .store()
+        + pickable_rect(WALL_PICKABLE_WIDTH / 2. * LEVEL_SCALING, LEVEL_SCALING)
         + pos(x, y)
         << (
-            Ceiling,
             Transform::from_xyz(0.0, -0.06, 0.0),
-            Pickable::default(),
+            Pickable::IGNORE,
             Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
@@ -295,13 +297,14 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
         Friction::new(0.3),
         Name::new("Floor"),
         Visibility::Inherited,
+        Floor,
     )
         .store()
+        + pickable_rect(WALL_PICKABLE_WIDTH / 2. * LEVEL_SCALING, LEVEL_SCALING)
         + pos(x, y)
         << (
-            Floor,
             Transform::from_xyz(0.0, 0.06, 0.0),
-            Pickable::default(),
+            Pickable::IGNORE,
             Visibility::Inherited,
             Sprite {
                 image: level_assets.level.clone(),
@@ -323,6 +326,18 @@ pub fn node(
     prev_direction: CellDirection,
 ) -> ComponentTree {
     PathNode::new(direction, prev_direction).store() + pos(x, y)
+}
+
+pub fn pickable_rect(h: f32, w: f32) -> ComponentTree {
+    (
+        Sprite {
+            color: Color::WHITE.with_alpha(0.001),
+            custom_size: Some(Vec2::new(w, h)),
+            ..default()
+        },
+        Pickable::default(),
+    )
+        .store()
 }
 
 pub fn pos(x: f32, y: f32) -> ComponentTree {

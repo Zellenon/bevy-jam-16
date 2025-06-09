@@ -29,13 +29,14 @@ pub struct HotbarItem;
 struct CancelInput;
 
 fn on_enter_game(mut commands: Commands, assets: Res<UiAssets>) {
-    let hotbar_items: Vec<_> = Tower::all()
+    let mut towers = Tower::all();
+    towers.sort_by(|a, b| a.price().cmp(&b.price()));
+
+    let hotbar_items: Vec<_> = towers
         .iter()
         .map(|t| {
-            (
-                *t,
-                assets.hotbar_icons.get(t.ui_asset_key()).unwrap().clone(),
-            )
+            let asset = assets.hotbar_icons.get(t.ui_asset_key()).unwrap().clone();
+            (*t, asset)
         })
         .collect();
 
