@@ -1,19 +1,18 @@
 use crate::{
-    AppSystems, PausableSystems,
-    assets::{StatusSprites, game_assets::HEALTH_BAR_WIDTH},
-    data::{
-        PlayerState, StatusEffect, Tower, TowerCollision, get_collision,
-        projectiles::DamageType,
-        stats::{DamageMultiplier, DamageMultiplierAll, Stat},
+    assets::game_assets::HEALTH_BAR_WIDTH, data::{
+        get_collision, projectiles::DamageType, stats::{DamageMultiplier, DamageMultiplierAll, Stat}, PlayerState, StatusEffect,
+        Tower,
+        TowerCollision,
     },
     demo::enemy_movement::MovementDirection,
     gameplay::shared_systems::Lifetime,
+    AppSystems,
+    PausableSystems,
 };
 use avian2d::prelude::{Collider, CollisionLayers, OnCollisionEnd, OnCollisionStart};
 use bevy::ecs::relationship::DescendantIter;
 use bevy::prelude::*;
 use bevy_turborand::{DelegatedRng, GlobalRng};
-use std::f32::consts::PI;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(

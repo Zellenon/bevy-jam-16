@@ -1,14 +1,12 @@
 //! The credits menu.
 
+use crate::data::levels::LevelData;
+use crate::level::resource::{LevelSelect, UnlockedLevels};
+use crate::prelude::*;
+use crate::{menus::Menu, theme::prelude::*};
 use bevy::{
     ecs::spawn::SpawnIter, input::common_conditions::input_just_pressed, prelude::*, ui::Val::*,
 };
-
-use crate::data::levels::LevelData;
-use crate::gameplay::level;
-use crate::level::resource::{LevelSelect, UnlockedLevels};
-use crate::prelude::*;
-use crate::{audio::music, menus::Menu, theme::prelude::*};
 
 #[derive(Component)]
 struct LevelIndex(usize);
@@ -67,7 +65,7 @@ fn grid(content: Vec<(String, usize)>) -> impl Bundle {
             ..default()
         },
         Children::spawn(SpawnIter(content.into_iter().map(|(text, idx)| {
-            (widget::global_observer_button(text, (LevelIndex(idx))),)
+            widget::global_observer_button(text, LevelIndex(idx))
         }))),
     )
 }

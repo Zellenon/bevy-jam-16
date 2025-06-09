@@ -81,6 +81,16 @@ pub fn label(text: impl Into<String>) -> impl Bundle {
     )
 }
 
+/// Credits
+pub fn credits_text(text: impl Into<String>) -> impl Bundle {
+    (
+        Name::new("Credits Text"),
+        Text(text.into()),
+        TextFont::from_font(LABEL_FONT).with_font_size(20.0),
+        TextColor(LABEL_TEXT),
+    )
+}
+
 pub fn ui_font(text: impl Into<String>) -> impl Bundle {
     (
         Name::new("Text"),

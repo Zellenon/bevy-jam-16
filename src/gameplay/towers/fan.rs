@@ -1,28 +1,13 @@
-use avian2d::{
-    parry::query::RayCast,
-    prelude::{Collider, Collisions, ExternalImpulse, LayerMask, RayCaster, RayHits, Sensor},
-};
-use bevy::{
-    ecs::{
-        component::Component,
-        entity::{Entity, EntityHashSet},
-        query::With,
-        system::{Commands, Query, Res},
-    },
-    math::{Dir2, Vec2, Vec3},
-    prelude::Vec3Swizzles,
-    reflect::Reflect,
-    time::Time,
-    transform::components::{GlobalTransform, Transform},
-};
-
+use super::directional::FireDirection;
 use crate::{
     demo::enemy_health::EnemyHealth,
     level::{components::PathNode, resource::CellDirection},
     prefabs::physics::GamePhysicsLayer,
 };
-
-use super::directional::FireDirection;
+use avian2d::prelude::{
+    Collider, Collisions, ExternalImpulse, LayerMask, RayCaster, RayHits, Sensor,
+};
+use bevy::{ecs::entity::EntityHashSet, prelude::*};
 
 #[derive(Component, Reflect, Debug, Clone, Copy)]
 pub struct ForceField(pub CellDirection);

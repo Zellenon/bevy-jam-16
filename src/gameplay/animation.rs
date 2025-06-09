@@ -29,6 +29,7 @@ impl AnimationFrameQueue {
         }
     }
 
+    #[allow(unused)]
     pub fn set_frames(&mut self, frames: &'static [usize]) {
         assert!(!frames.is_empty(), "Animation frames cannot be empty");
         self.frames = frames;
@@ -36,6 +37,7 @@ impl AnimationFrameQueue {
         self.timer.reset();
     }
 
+    #[allow(unused)]
     pub fn set_override(&mut self, override_frames: &'static [usize]) {
         assert!(
             !override_frames.is_empty(),
@@ -46,7 +48,7 @@ impl AnimationFrameQueue {
         self.timer.reset();
     }
 
-    pub fn tick_and_advance(&mut self, time: &Time, sprite: &mut TextureAtlas) {
+    fn tick_and_advance(&mut self, time: &Time, sprite: &mut TextureAtlas) {
         self.timer.tick(time.delta());
 
         let active_frames = self.frame_override.unwrap_or(self.frames);

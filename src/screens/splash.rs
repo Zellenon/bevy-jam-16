@@ -49,11 +49,7 @@ const SPLASH_BACKGROUND_COLOR: Color = Color::srgb(0.157, 0.157, 0.157);
 const SPLASH_DURATION_SECS: f32 = 1.8;
 const SPLASH_FADE_DURATION_SECS: f32 = 0.6;
 
-fn spawn_splash_screen(
-    mut commands: Commands,
-    assets: Res<UiAssets>,
-    asset_server: Res<AssetServer>,
-) {
+fn spawn_splash_screen(mut commands: Commands, assets: Res<UiAssets>) {
     commands.spawn((
         widget::ui_root("Splash Screen"),
         BackgroundColor(SPLASH_BACKGROUND_COLOR),

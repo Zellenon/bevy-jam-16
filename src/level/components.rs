@@ -4,7 +4,7 @@ use crate::gameplay::animation::AnimationFrameQueue;
 use crate::prefabs::physics::GamePhysicsLayer as GPL;
 use avian2d::prelude::{Collider, CollisionLayers, Friction, RigidBody};
 use bevy::prelude::*;
-use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree, wrappers::name};
+use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree};
 use bevy_turborand::{DelegatedRng, GlobalRng};
 use std::f32::consts::PI;
 

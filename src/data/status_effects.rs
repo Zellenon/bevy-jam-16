@@ -1,7 +1,6 @@
-use std::{default, marker::PhantomData};
-
 use crate::define_status_effect;
 use bevy::{color::palettes::css::*, prelude::*, reflect::GetTypeRegistration};
+use std::marker::PhantomData;
 
 use super::projectiles::DamageType;
 

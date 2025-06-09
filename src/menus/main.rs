@@ -1,6 +1,6 @@
 //! The main menu (seen on the title screen).
 
-use crate::{menus::Menu, screens::Screen, theme::widget};
+use crate::{menus::Menu, theme::widget};
 use bevy::color::palettes::tailwind;
 use bevy::prelude::*;
 
@@ -33,18 +33,6 @@ fn spawn_main_menu(mut commands: Commands) {
     ));
     commands.insert_resource(ClearColor(tailwind::SLATE_950.into()));
     commands.spawn(());
-}
-
-fn enter_loading_or_gameplay_screen(
-    _: Trigger<Pointer<Click>>,
-    // resource_handles: Res<ResourceHandles>,
-    mut next_screen: ResMut<NextState<Screen>>,
-) {
-    // if resource_handles.is_all_done() {
-    next_screen.set(Screen::Gameplay);
-    // } else {
-    //     next_screen.set(Screen::Loading);
-    // }
 }
 
 fn open_settings_menu(_: Trigger<Pointer<Click>>, mut next_menu: ResMut<NextState<Menu>>) {

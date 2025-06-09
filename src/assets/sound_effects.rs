@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use crate::{audio::sound_effect, data::Tower};
+use crate::audio::sound_effect;
 use bevy::prelude::*;
 use bevy_asset_loader::asset_collection::AssetCollection;
 

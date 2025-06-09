@@ -1,15 +1,6 @@
-use bevy::prelude::*;
-use bevy_composable::app_impl::ComponentTreeable;
-use directional::FireDirection;
-
-use super::{stats::StatSet, status_effects::common::status_debuff_multiplier};
 use crate::{
     PausableSystems,
-    data::{
-        projectiles::{Droplet, Puddle},
-        stats::MoveSpeed,
-        status_effects::Frozen,
-    },
+    data::projectiles::{Droplet, Puddle},
     prefabs::wizardry::add_observer_to_component,
     screens::Screen,
 };
@@ -17,7 +8,9 @@ use attacks::{
     ApplyAttackData, AttackEnemiesInContact, DropLiquid, animate_towers_on_attack,
     attack_contact_enemies, dispatch_attack_effects, do_tower_attacks, play_tower_sfx,
 };
+use bevy::prelude::*;
 use common::*;
+use directional::FireDirection;
 use fan::{ForceField, do_forcefields, resolve_fancasters, spawn_fancasters};
 use gravity_bullshit::{RangeDropper, drop_ranges, spawn_rangedroppers};
 use liquids::{drop_liquids, puddle_attacks, splat_droplets, stop_dropping_puddles};

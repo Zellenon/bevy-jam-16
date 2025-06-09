@@ -1,7 +1,5 @@
-use crate::data::StatusEffect;
 use crate::data::projectiles::LiquidType;
 use crate::gameplay::animation::AnimationFrameQueue;
-use crate::level::components::LEVEL_SCALING;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 

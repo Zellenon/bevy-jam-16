@@ -1,34 +1,14 @@
-use avian2d::prelude::{Collisions, LinearVelocity, OnCollisionStart, Sensor};
-use bevy::{
-    ecs::{
-        entity::Entity,
-        event::{Event, EventReader, EventWriter},
-        hierarchy::{ChildOf, Children},
-        observer::Trigger,
-        query::With,
-        system::{Commands, Query},
-    },
-    math::{Vec2, Vec3Swizzles},
-    prelude::{warn, *},
-    reflect::Reflect,
-    transform::components::{GlobalTransform, Transform},
-};
-use bevy_composable::app_impl::ComplexSpawnable;
-use std::cell;
-
 use super::{
     common::{TowerFired, TowerTriggerRange},
     directional::FireDirection,
     piston::Shove,
 };
 use crate::{
-    assets::{SoundEffects, sound_effects::FireSoundEffect},
-    audio::sound_effect,
+    assets::sound_effects::FireSoundEffect,
     data::{
         Tower,
         projectiles::{
-            AttackData, AttackSpecification, DamageType, Droplet, LiquidType, Puddle,
-            TowerAttackType,
+            AttackData, AttackSpecification, Droplet, LiquidType, Puddle, TowerAttackType,
         },
         status_effects::damage_multiplier,
     },
@@ -43,6 +23,9 @@ use crate::{
     },
     prefabs::attacks::{droplet, puddle},
 };
+use avian2d::prelude::{Collisions, LinearVelocity, OnCollisionStart, Sensor};
+use bevy::prelude::*;
+use bevy_composable::app_impl::ComplexSpawnable;
 
 #[derive(Event, Reflect, Debug, PartialEq, Clone)]
 pub struct ApplyAttackData {
