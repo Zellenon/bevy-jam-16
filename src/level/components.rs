@@ -4,14 +4,15 @@ use crate::gameplay::animation::AnimationFrameQueue;
 use crate::prefabs::physics::GamePhysicsLayer as GPL;
 use avian2d::prelude::{Collider, CollisionLayers, Friction, RigidBody};
 use bevy::prelude::*;
+use bevy::sprite::Anchor;
 use bevy_composable::{app_impl::ComponentTreeable, tree::ComponentTree};
 use bevy_turborand::{DelegatedRng, GlobalRng};
 use std::f32::consts::PI;
 
-pub const WALL_TOTAL_WIDTH: f32 = 0.10;
-pub const WALL_PICKABLE_WIDTH: f32 = 0.20;
-pub const FLOOR_TOTAL_HEIGHT: f32 = 0.10;
 pub const LEVEL_SCALING: f32 = 10.;
+pub const WALL_TOTAL_WIDTH: f32 = 0.10;
+pub const PICKABLE_SIZE: f32 = 2.0;
+pub const FLOOR_TOTAL_HEIGHT: f32 = 0.10;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash, Reflect)]
 pub enum WallDirection {
@@ -238,7 +239,14 @@ pub fn wall(
         Wall(direction),
     )
         .store()
-        + pickable_rect(LEVEL_SCALING, WALL_PICKABLE_WIDTH * LEVEL_SCALING)
+        + pickable_rect(
+            PICKABLE_SIZE,
+            LEVEL_SCALING,
+            match direction {
+                WallDirection::Left => Anchor::CenterLeft,
+                WallDirection::Right => Anchor::CenterRight,
+            },
+        )
         + pos(x, y)
         << (
             Transform::from_xyz(0.0, 0.0, 0.1).with_rotation(Quat::from_rotation_z(PI / 2.0)),
@@ -269,7 +277,7 @@ pub fn ceiling(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree
         Ceiling,
     )
         .store()
-        + pickable_rect(WALL_PICKABLE_WIDTH / 4. * LEVEL_SCALING, LEVEL_SCALING)
+        + pickable_rect(LEVEL_SCALING, PICKABLE_SIZE, Anchor::TopCenter)
         + pos(x, y)
         << (
             Transform::from_xyz(0.0, -0.06, 0.0),
@@ -300,7 +308,7 @@ pub fn floor(level_assets: &Res<LevelAssets>, x: f32, y: f32) -> ComponentTree {
         Floor,
     )
         .store()
-        + pickable_rect(WALL_PICKABLE_WIDTH / 2. * LEVEL_SCALING, LEVEL_SCALING)
+        + pickable_rect(LEVEL_SCALING, PICKABLE_SIZE, Anchor::BottomCenter)
         + pos(x, y)
         << (
             Transform::from_xyz(0.0, 0.06, 0.0),
@@ -328,9 +336,10 @@ pub fn node(
     PathNode::new(direction, prev_direction).store() + pos(x, y)
 }
 
-pub fn pickable_rect(h: f32, w: f32) -> ComponentTree {
+pub fn pickable_rect(w: f32, h: f32, anchor: Anchor) -> ComponentTree {
     (
         Sprite {
+            anchor,
             color: Color::WHITE.with_alpha(0.001),
             custom_size: Some(Vec2::new(w, h)),
             ..default()

@@ -57,8 +57,8 @@ fn show_message(
                 align_content: AlignContent::Center,
                 ..default()
             },
-            children![(widget::ui_font(message)),]
-        ),],
+            children![widget::ui_font(message)]
+        )],
     ));
 }
 
