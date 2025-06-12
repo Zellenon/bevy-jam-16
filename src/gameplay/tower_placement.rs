@@ -1,19 +1,18 @@
-use std::time::Duration;
-
-use bevy::prelude::*;
-use bevy_composable::app_impl::{ComplexSpawnable, ComponentTreeable};
-
 use crate::{
     assets::{SoundEffects, TowerSprites},
     audio::sound_effect,
     data::*,
-    gameplay::{hotbar::HotbarItem, messages::DisplayFlashMessage},
+    gameplay::messages::DisplayFlashMessage,
     level::{
         components::{Adjacent, Ceiling, ExactPosition, Floor, LEVEL_SCALING, Wall, WallDirection},
         resource::CellDirection,
     },
     prelude::*,
 };
+use bevy::color::palettes::css;
+use bevy::prelude::*;
+use bevy_composable::app_impl::{ComplexSpawnable, ComponentTreeable};
+use std::time::Duration;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_event::<TowerPlacementEvent>();
@@ -36,10 +35,12 @@ pub(super) fn plugin(app: &mut App) {
         on_exit_placement_state,
     );
 
-    app.insert_resource(TowerPreview::default());
-    app.add_systems(Update, remove_preview);
-    app.add_observer(observe_placeholder);
+    app.init_resource::<TowerPreview>();
+    app.init_resource::<BodgeTimer>();
+    app.add_systems(Update, (remove_preview, tick_spawn_timer));
+    app.add_observer(spawn_tower_on_click);
     app.add_observer(right_click_tower_options);
+    app.add_observer(set_spawned_preview_sprite);
 
     app.add_systems(
         Update,
@@ -65,6 +66,17 @@ struct TowerPreview {
 #[derive(Component, Debug, Default, Clone, Copy, Reflect)]
 struct SpawnedPreview;
 
+fn set_spawned_preview_sprite(
+    trigger: Trigger<OnAdd, SpawnedPreview>,
+    mut sprites: Query<&mut Sprite, With<SpawnedPreview>>,
+) {
+    let Ok(mut sprite) = sprites.get_mut(trigger.target()) else {
+        return;
+    };
+
+    sprite.color = css::GREEN.with_alpha(0.65).into();
+}
+
 impl TowerPreview {
     fn reset(&mut self) {
         *self = TowerPreview::default()
@@ -74,7 +86,7 @@ impl TowerPreview {
 #[derive(Event, Debug, Clone, Copy, Reflect)]
 struct SelectTower(pub Entity);
 
-#[derive(Debug, Clone, Reflect)]
+#[derive(Debug, Clone, Reflect, Resource)]
 struct BodgeTimer(pub Timer);
 
 impl Default for BodgeTimer {
@@ -163,61 +175,70 @@ fn tower_placement_change(
     };
 
     commands.entity(*parent).with_children(|builder| {
-        builder
-            .spawn((
-                sprites.tower_bundle(tower, placement),
-                placement.sprite_offset(&tower),
-                SpawnedPreview,
-                Pickable::default(),
-            ))
-            .observe(observe_placeholder);
+        builder.spawn((
+            sprites.tower_bundle(tower, placement),
+            placement.sprite_offset(&tower),
+            SpawnedPreview,
+            Pickable::default(),
+        ));
     });
 }
 
-fn observe_placeholder(
-    trigger: Trigger<Pointer<Click>>,
-    spawned_previews: Query<(), With<SpawnedPreview>>,
+fn tick_spawn_timer(mut timer: ResMut<BodgeTimer>, time: Res<Time>) {
+    timer.0.tick(time.delta());
+}
+
+fn spawn_tower_on_click(
+    _: Trigger<Pointer<Click>>,
     mut commands: Commands,
     mut next_pointer_state: ResMut<NextState<PointerInteractionState>>,
     mut tower_placement_writer: EventWriter<TowerPlacementEvent>,
     mut player_state: ResMut<PlayerState>,
+    mut timer: ResMut<BodgeTimer>,
+    windows: Query<&Window>,
+    cameras: Query<(&Camera, &GlobalTransform)>,
+    spawned_previews: Query<&GlobalTransform, With<SpawnedPreview>>,
     input: Res<ButtonInput<KeyCode>>,
     preview: Res<TowerPreview>,
     relationships: Query<&Children>,
     towers: Query<(&ChildOf, &Tower)>,
     adjacent_placements: Query<(Entity, &Adjacent)>,
-    hotbar: Query<(), With<HotbarItem>>,
-    mut timer: Local<BodgeTimer>,
-    time: Res<Time>,
 ) {
-    timer.0.tick(time.delta());
-    if timer.0.finished() {
-        timer.0.reset();
-        timer.0.unpause();
-    } else {
+    if !timer.0.finished() {
         return;
     }
 
-    if let Ok(_) = hotbar.get(trigger.target) {
+    // must be in valid state
+    let (Some(tower), Some(entity), Some(orientation)) = (
+        preview.tower,
+        preview.position_entity,
+        preview.cell_direction,
+    ) else {
+        return;
+    };
+
+    let (Ok(window), Ok((camera, camera_transform))) = (windows.single(), cameras.single()) else {
+        return;
+    };
+
+    let Some(window_cursor_position) = window.cursor_position() else {
+        return;
+    };
+
+    let Ok(game_cursor_position) =
+        camera.viewport_to_world_2d(camera_transform, window_cursor_position)
+    else {
+        return;
+    };
+
+    let previews = spawned_previews
+        .iter()
+        .filter(|transform| transform.translation().xy().distance(game_cursor_position) < 5.0)
+        .collect::<Vec<_>>();
+
+    if previews.len() != 1 {
         return;
     }
-
-    let total_previews = spawned_previews.iter().len();
-    if total_previews != 1 {
-        return;
-    }
-
-    let Some(tower) = preview.tower else {
-        return;
-    };
-
-    let Some(entity) = preview.position_entity else {
-        return;
-    };
-
-    let Some(orientation) = preview.cell_direction else {
-        return;
-    };
 
     // prevent placement if user cannot afford tower
     if !player_state.can_afford(tower.price()) {
@@ -235,6 +256,7 @@ fn observe_placeholder(
         }
     }
 
+    // Some towers have limits to where they can be placed
     if tower.requires_adjecent_wall() {
         if let Ok((_, occupied_adjacent)) = adjacent_placements.get(entity) {
             if tower.requires_floor_placement()
@@ -266,7 +288,7 @@ fn observe_placeholder(
             }
         };
     }
-
+    // Some towers have limits on where they can be placed
     for (parent, tower) in towers {
         if tower.requires_adjecent_wall() {
             if let Ok((_, occupied_adjacent)) = adjacent_placements.get(parent.0) {
@@ -282,8 +304,10 @@ fn observe_placeholder(
         }
     }
 
+    // All good, subtract money and place tower
     player_state.money -= tower.price();
     tower_placement_writer.write(TowerPlacementEvent::Accepted(tower, entity, orientation));
+    timer.0.reset();
 
     if !input.pressed(KeyCode::ShiftLeft) && !input.pressed(KeyCode::ShiftRight) {
         next_pointer_state.set(PointerInteractionState::Selecting);

@@ -103,7 +103,7 @@ fn bounty_earned(trigger: Trigger<BountyEarned>, mut commands: Commands) {
     // commands.spawn(sound_effect(sfx.money.clone()));
 
     commands.spawn((
-        Lifetime::new(2.0),
+        Lifetime::new(3.0),
         StateScoped(Screen::Gameplay),
         HudElement::BountyEarned,
         Node {
@@ -113,7 +113,7 @@ fn bounty_earned(trigger: Trigger<BountyEarned>, mut commands: Commands) {
             ..default()
         },
         Name::new("Bounty Earned"),
-        Text(format!("Bounty {earned}")),
+        Text(format!("Earned ${earned}")),
         TextFont::from_font(LABEL_FONT).with_font_size(18.0),
         TextColor(tailwind::INDIGO_300.into()),
     ));
