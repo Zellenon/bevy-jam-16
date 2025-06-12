@@ -7,7 +7,6 @@ use bevy::{
         query::With,
         system::{Commands, Query, Res},
     },
-    math::Vec3,
     reflect::Reflect,
     sprite::Sprite,
     time::Time,

@@ -4,8 +4,8 @@ use bevy::prelude::*;
 
 use crate::{
     level::{
+        resource::LevelSelect,
         START_LEVEL,
-        resource::{LevelSelect, UnlockedLevels},
     },
     menus::Menu,
     screens::Screen,
